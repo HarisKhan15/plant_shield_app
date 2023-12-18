@@ -1,41 +1,37 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, sort_child_properties_last
 
 import 'package:flutter/material.dart';
-import 'package:plant_shield_app/features/otp/otp-page.dart';
-import 'package:plant_shield_app/features/signin/signin-page.dart';
+import 'package:plant_shield_app/features/home/home-page.dart';
+import 'package:plant_shield_app/features/signup/signup-page.dart';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({Key? key}) : super(key: key);
+class SigninScreen extends StatefulWidget {
+  const SigninScreen({Key? key}) : super(key: key);
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<SigninScreen> createState() => _SigninScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
-  final TextEditingController _emailController = TextEditingController();
+class _SigninScreenState extends State<SigninScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-bool _isObscurePassword = true;
-bool _isObscureConfirmPassword = true;
-bool _hasText = false; 
-bool _hasConfirmText = false; 
+  bool _isObscurePassword = true;
+  bool _hasText = false; 
 
-      
-  void _signUp() {
+  void _signIn() {
     if (_formKey.currentState!.validate()) {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => OtpScreen()),
+        MaterialPageRoute(builder: (context) => HomeScreen()), 
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+
+    
     return Scaffold(
-       backgroundColor: Colors.white,
       body: Form(
         key: _formKey,
         child: Stack(
@@ -50,7 +46,7 @@ bool _hasConfirmText = false;
       ),
     ),    
 
-//feilds
+//username and password  
   SingleChildScrollView(
      child: Container(
       padding: EdgeInsets.only(
@@ -59,62 +55,33 @@ bool _hasConfirmText = false;
       child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-      //email  
         Padding(
-           padding: const EdgeInsets.symmetric(horizontal: 25),
-           child: TextFormField(
-                controller: _emailController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter an email';
-                  }
-                  return null;
-                },
-              decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(vertical: 12,horizontal: 12),
-              fillColor: Colors.grey.shade100,
-              hintText: 'Email',
-               hintStyle: TextStyle(fontSize: 12),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              suffixIcon: SizedBox(
-                width: 24,
-                height: 24,
-                child: Image.asset('assets/mail.png'),
-              ),
-              filled: true,
-            ),
-          ),
-        ),
-    SizedBox(height: 10),
-    //username
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25),
-          child: TextFormField(
-              controller: _usernameController,
+             padding: const EdgeInsets.symmetric(horizontal: 25),
+             child: TextFormField(
+             controller: _usernameController,
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a username';
+               if (value == null || value.isEmpty) {
+               return 'Please enter a username';
                 }
                 return null;
               },
-              decoration: InputDecoration(
-               contentPadding: EdgeInsets.symmetric(vertical: 12,horizontal: 12),  
+               decoration: InputDecoration(
+               contentPadding: EdgeInsets.symmetric(vertical: 12,horizontal: 12),
               fillColor: Colors.grey.shade100,
-              hintText: 'UserName',
+              hintText: 'Username' ,
               hintStyle: TextStyle(fontSize: 12),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10),),
               suffixIcon: SizedBox(
                 width: 24,
                 height: 24,
                 child: Image.asset('assets/user.png'),
               ),
               filled: true,
-            ),
-          ),
-        ),
-         SizedBox(height: 10),
-     // Password 
-          Padding(
+                          ),
+                        ),
+                      ),
+    SizedBox(height: 20),
+         Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: TextFormField(
               controller: _passwordController,
@@ -164,86 +131,53 @@ bool _hasConfirmText = false;
               ),
             ),
           ),
-  SizedBox(height: 10),
 
-// Confirm Password 
-              Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
-              child: TextFormField(
-                controller: _confirmPasswordController,
-                obscureText: _isObscureConfirmPassword,
-                onChanged: (value) {
-                  setState(() {
-                    _hasConfirmText = value.isNotEmpty;
-                  });
-                },
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                  fillColor: Colors.grey.shade100,
-                  hintText: 'Confirm Password',
-                  hintStyle: TextStyle(fontSize: 12),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                  suffixIcon: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _isObscureConfirmPassword = !_isObscureConfirmPassword;
-                          });
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 5),
-                          child: Icon(
-                            _hasConfirmText ? (_isObscureConfirmPassword ? Icons.visibility_off : Icons.visibility) : null,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: _hasConfirmText
-                            ? SizedBox.shrink()
-                            : Image.asset(
-                                'assets/lock.png',
-                                width: 24,
-                                height: 24,
-                              ),
-                      ),
-                    ],
-                  ),
-                  filled: true,
-                ),
+        // forget password
+      Row(
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: 220), 
+          child: TextButton(
+            onPressed: () {},
+            child: Text(
+              'Forget Password?',
+              style: TextStyle(
+                decoration: TextDecoration.underline,
+                fontSize: 10,
+                color: Color(0xFFFF0000),
               ),
             ),
+          ),
+        ),
+      ],
+    ),
 
-  SizedBox(height: 15),
-//sign up button
-           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-            Container(
-                width: 255, 
-                height: 40,
-                decoration: BoxDecoration(
-                color: Color(0xFF449636),
-                borderRadius: BorderRadius.circular(30),
+  SizedBox(height: 5),
+//sign in button
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+          Container(
+           width: 255, 
+            height: 40,
+            child: ElevatedButton(
+            onPressed: _signIn,
+              child: Text(
+              'Sign in',
+              style: TextStyle(
+               color: Colors.white,
+               fontSize: 18,
+                fontWeight: FontWeight.w700, 
+                        ),
+                      ),
+                    style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color(0xFF449636)), 
+                  shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30))), 
                 ),
-                  child: IconButton(
-                   color: Colors.white,
-                   onPressed: _signUp,
-                icon: Text(
-                'Sign up',
-                style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                 fontWeight: FontWeight.w700),
-                  ),
-                ),
-               )
-              ],
              ),
+         )
+         ],
+      ),
 //dividers
               Row(
                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -273,7 +207,7 @@ bool _hasConfirmText = false;
                 children: [
                 Transform(
                     transform: Matrix4.translationValues(0, -20, 0), 
-                    child: Text('Sign up with', style: TextStyle(fontSize: 12)),
+                    child: Text('Sign in with', style: TextStyle(fontSize: 12)),
                   ),
                 ],
                ), 
@@ -299,7 +233,7 @@ bool _hasConfirmText = false;
                   ),
                 ],
               ),
-             
+           
 //dont have account
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -315,7 +249,7 @@ bool _hasConfirmText = false;
                         onPressed: () {
                         Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => SigninScreen()),
+                            MaterialPageRoute(builder: (context) => SignupScreen()),
                           );
                         },
                         child: Text(
@@ -330,14 +264,15 @@ bool _hasConfirmText = false;
                       ),
                     ],
                   )
-            ],
-          ),
-        ),
-      )
+                ],
+              ),
+            ),
           )
-          ],
-         )
+              )
+              ],
+            )
           )
     );
   }
 }
+
