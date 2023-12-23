@@ -11,20 +11,21 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  List<TextEditingController> _otpControllers = List.generate(6, (index) => TextEditingController());
+  List<TextEditingController> _otpControllers =
+      List.generate(6, (index) => TextEditingController());
 
   @override
   void dispose() {
-   for (var controller in _otpControllers) {
+    for (var controller in _otpControllers) {
       controller.dispose();
     }
     super.dispose();
   }
 
-  
   bool _isOtpEntered() {
-  List<String> otpValues = List.generate(6, (index) => _otpControllers[index].text);
- return !otpValues.contains('');
+    List<String> otpValues =
+        List.generate(6, (index) => _otpControllers[index].text);
+    return !otpValues.contains('');
   }
 
   @override
@@ -60,12 +61,14 @@ class _OtpScreenState extends State<OtpScreen> {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: "Please enter the 6-digit code sent to your email ",
+                            text:
+                                "Please enter the 6-digit code sent to your email ",
                             style: TextStyle(color: Colors.black, fontSize: 13),
                           ),
                           TextSpan(
                             text: "abc.123@gmail.com",
-                            style: TextStyle(color: Color(0xFF58964D), fontSize: 13),
+                            style: TextStyle(
+                                color: Color(0xFF58964D), fontSize: 13),
                           ),
                           TextSpan(
                             text: " for verification.",
@@ -88,7 +91,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         width: 38,
                         height: 45,
                         child: TextField(
-                          controller: _otpControllers[index], 
+                          controller: _otpControllers[index],
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
@@ -127,12 +130,14 @@ class _OtpScreenState extends State<OtpScreen> {
                             if (_isOtpEntered()) {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                                MaterialPageRoute(
+                                    builder: (context) => WelcomeScreen()),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Please enter the complete OTP.'),
+                                  content:
+                                      Text('Please enter the complete OTP.'),
                                 ),
                               );
                             }

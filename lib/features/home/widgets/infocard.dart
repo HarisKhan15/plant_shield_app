@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-
 class infocard extends StatelessWidget {
   const infocard({
     super.key,
-     required this.Username,
-      required this.FullName,
+    required this.Username,
+    required this.FullName,
   });
 
   final String Username, FullName;
@@ -22,8 +21,14 @@ class infocard extends StatelessWidget {
           size: 40,
         ),
       ),
-      title: Text(Username),
-      subtitle: Text(FullName),
+      title: Text(
+        Username,
+        style: TextStyle(fontSize: 18),
+      ),
+      subtitle: Text(
+        FullName,
+        style: TextStyle(fontSize: 15),
+      ),
     );
   }
 }
