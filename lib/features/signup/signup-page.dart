@@ -330,7 +330,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Dont have an account',
+                              'Already have an account',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Color(0xfff4c505b),
@@ -345,7 +345,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 );
                               },
                               child: Text(
-                                'Sign up',
+                                'Sign in',
                                 style: TextStyle(
                                   decoration: TextDecoration.underline,
                                   fontWeight: FontWeight.bold,

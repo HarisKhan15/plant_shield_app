@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:plant_shield_app/features/home/home-page.dart';
+import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:plant_shield_app/features/otp/otp-page.dart';
 
 class WelcomeScreen extends StatefulWidget {

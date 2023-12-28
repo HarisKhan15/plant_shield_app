@@ -1,7 +1,8 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, sort_child_properties_last
+// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, sort_child_properties_last, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:plant_shield_app/features/home/home-page.dart';
+import 'package:plant_shield_app/features/home/home_page.dart';
+import 'package:plant_shield_app/features/signin/signin-service.dart';
 import 'package:plant_shield_app/features/signup/signup-page.dart';
 
 class SigninScreen extends StatefulWidget {
@@ -18,12 +19,32 @@ class _SigninScreenState extends State<SigninScreen> {
   bool _isObscurePassword = true;
   bool _hasText = false;
 
-  void _signIn() {
+  void _signIn() async {
     if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
+      try {
+        bool response = await fetchAlbum(
+            _usernameController.text, _passwordController.text);
+        if (response) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        } else {
+          // Show toast for incorrect credentials
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Incorrect username or password'),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        // Handle exceptions, e.g., network issues
+        print("Error: $e");
+      }
+    } else {
+      // Handle form validation failure
     }
   }
 

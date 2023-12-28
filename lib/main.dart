@@ -1,12 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-//import 'dart:js';
-
-//import 'dart:js';
-
 import 'package:flutter/material.dart';
-import 'package:plant_shield_app/features/home/home-page.dart';
-import 'package:plant_shield_app/features/home/widgets/infocard.dart';
+import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:plant_shield_app/features/otp/otp-page.dart';
 import 'package:plant_shield_app/features/signin/signin-page.dart';
 import 'package:plant_shield_app/features/signup/signup-page.dart';
@@ -14,7 +9,8 @@ import 'package:plant_shield_app/features/splash/splash-page.dart';
 import 'package:plant_shield_app/features/welcome/welcome-page.dart';
 
 void main() {
-  runApp(MaterialApp(
+  runApp(
+    MaterialApp(
       title: "Plant Sheild",
       debugShowCheckedModeBanner: false,
       initialRoute: '/splash',
