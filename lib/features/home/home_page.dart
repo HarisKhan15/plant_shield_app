@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/home/constants.dart';
 import 'package:plant_shield_app/features/home/infocard.dart';
+import 'package:plant_shield_app/features/myPlants/myPlants_page.dart';
 import 'package:plant_shield_app/features/plantDetail/detail_page.dart';
 import 'package:plant_shield_app/features/home/plant_widget.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
@@ -39,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
-      key: _scaffoldKey,
+        key: _scaffoldKey,
         appBar: AppBar(
             toolbarHeight: 75,
             backgroundColor: Colors.white,
@@ -125,7 +126,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     'My Plants',
                     style: TextStyle(fontSize: 18),
                   ),
-                  onTap: () {}),
+                  onTap: () {
+                    List<Plant> favoritedPlants =
+                        _plantList.where((plant) => plant.isFavorated).toList();
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            MyplantsScreen(favoritedPlants: favoritedPlants)));
+                  }),
               Divider(
                 color: Color(0xFF78A55A),
                 thickness: 0.6,

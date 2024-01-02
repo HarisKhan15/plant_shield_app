@@ -41,13 +41,9 @@ class _DetailPageState extends State<DetailPage> {
                   },
                   child: Container(
                     height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      color: Constants.primaryColor.withOpacity(.15),
-                    ),
+                    width: 25,
                     child: Icon(
-                      Icons.close,
+                      Icons.arrow_back_rounded,
                       color: Constants.primaryColor,
                     ),
                   ),
@@ -224,18 +220,25 @@ class _DetailPageState extends State<DetailPage> {
             Container(
               height: 50,
               width: 50,
-              child: IconButton(onPressed: (){
-                setState(() {
-                  bool isSelected = toggleIsSelected(_plantList[widget.plantId].isSelected);
+              child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      bool isSelected = toggleIsSelected(
+                          _plantList[widget.plantId].isSelected);
 
-                  _plantList[widget.plantId].isSelected = isSelected;
-                });
-              }, icon: Icon(
-                Icons.shopping_cart,
-                color: _plantList[widget.plantId].isSelected == true ? Colors.white : Constants.primaryColor,
-              )),
+                      _plantList[widget.plantId].isSelected = isSelected;
+                    });
+                  },
+                  icon: Icon(
+                    Icons.shopping_cart,
+                    color: _plantList[widget.plantId].isSelected == true
+                        ? Colors.white
+                        : Constants.primaryColor,
+                  )),
               decoration: BoxDecoration(
-                  color: _plantList[widget.plantId].isSelected == true ? Constants.primaryColor.withOpacity(.5) : Colors.white,
+                  color: _plantList[widget.plantId].isSelected == true
+                      ? Constants.primaryColor.withOpacity(.5)
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(50),
                   boxShadow: [
                     BoxShadow(
