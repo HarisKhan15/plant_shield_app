@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
 
 class WelcomeScreen extends StatefulWidget {
-  const WelcomeScreen({super.key});
+  final String username;
+  
+  const WelcomeScreen({super.key, required this.username});
 
   @override
   State<WelcomeScreen> createState() => _WelcomeScreenState();
@@ -13,6 +15,7 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   final TextEditingController _FullnameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   void _Next() {
     if (_formKey.currentState!.validate()) {
       Navigator.pushReplacement(

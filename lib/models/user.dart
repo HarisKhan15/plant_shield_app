@@ -1,26 +1,30 @@
 class User {
   String firstName;
+  String lastName;
   String email;
-  String phoneNumber;
-  String location;
-  
-  User({this.firstName = '', this.email = '', this.phoneNumber = '',this.location=''});
+  String username;
+
+  User(
+      {this.firstName = '',
+      this.lastName = '',
+      this.email = '',
+      this.username = ''});
 
   Map<String, dynamic> toJson() {
     return {
       'firstName': firstName,
+      'lastName': lastName,
       'email': email,
-      'phone': phoneNumber,
-      'adress':location
+      'username': username,
     };
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       firstName: json['firstName'] ?? '',
+      lastName: json['lastName'] ?? '',
       email: json['email'] ?? '',
-      phoneNumber: json['phone'] ?? '',
-      location: json['adress'] ?? '',
+      username: json['username'] ?? '',
     );
   }
 }

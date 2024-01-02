@@ -131,7 +131,7 @@ class _OtpScreenState extends State<OtpScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => WelcomeScreen()),
+                                    builder: (context) => WelcomeScreen(username: '',)),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(

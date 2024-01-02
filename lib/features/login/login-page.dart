@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isObscurePassword = true;
   bool _hasText = false;
 
-@override
+  @override
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
@@ -33,8 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void _logIn() async {
     if (_formKey.currentState!.validate()) {
       try {
-        var response =
-            await _userService.loginUser(_usernameController.text, _passwordController.text);
+        var response = await _userService.loginUser(
+            _usernameController.text, _passwordController.text);
         if (response?.statusCode == 200) {
           Navigator.pushReplacement(
             context,

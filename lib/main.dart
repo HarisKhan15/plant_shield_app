@@ -18,13 +18,13 @@ void main() {
         '/login': (context) => LoginScreen(),
         '/signup': (context) => SignupScreen(),
         '/otp': (context) => OtpScreen(),
-        '/welcome': (context) => WelcomeScreen(),
+        '/welcome': (context) => WelcomeScreen(username: '',),
         '/home': (context) => HomeScreen(),
       }));
 }
 
 class UrlConfig {
-static const String baseUrl = "http://192.168.1.103:8080/";
+static const String baseUrl = "https://f1a1-111-88-27-204.ngrok-free.app/";
 
 
   static Uri buildUri(String path) {
