@@ -1,8 +1,11 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:plant_shield_app/features/otp/otp-page.dart';
+import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:plant_shield_app/features/signin/signin-page.dart';
+import 'package:plant_shield_app/features/signup/signup-service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -23,12 +26,41 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _hasText = false;
   bool _hasConfirmText = false;
 
-  void _signUp() {
+  Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => OtpScreen()),
-      );
+      try {
+        String response = await registerUser(_emailController.text,
+            _usernameController.text, _passwordController.text);
+        if (response == 'OK') {
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => OtpScreen()),
+          // );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        }
+        else {
+          Map<String, dynamic> errorJson = jsonDecode(response);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorJson['error']),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Network error. Please try again.'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      
     }
   }
 
@@ -126,6 +158,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 25),
                           child: TextFormField(
                             controller: _passwordController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a Password';
+                              }
+                              return null;
+                            },
                             obscureText: _isObscurePassword,
                             onChanged: (value) {
                               setState(() {
@@ -186,6 +224,16 @@ class _SignupScreenState extends State<SignupScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 25),
                           child: TextFormField(
                             controller: _confirmPasswordController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please confirm your password';
+                              }
+                              if (_passwordController.text !=
+                                  _confirmPasswordController.text) {
+                                return 'Password does not match';
+                              }
+                              return null;
+                            },
                             obscureText: _isObscureConfirmPassword,
                             onChanged: (value) {
                               setState(() {

@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, sort_child_properties_last, use_build_context_synchronously
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:plant_shield_app/features/signin/signin-service.dart';
@@ -22,30 +24,34 @@ class _SigninScreenState extends State<SigninScreen> {
   void _signIn() async {
     if (_formKey.currentState!.validate()) {
       try {
-        bool response = await fetchAlbum(
+        String response = await loginUser(
             _usernameController.text, _passwordController.text);
-        if (response) {
+        if (response == "OK") {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
           );
         } else {
-          // Show toast for incorrect credentials
+          Map<String, dynamic> errorJson = jsonDecode(response);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Incorrect username or password'),
+              content: Text(errorJson['error']),
               duration: Duration(seconds: 2),
               backgroundColor: Colors.red,
             ),
           );
         }
       } catch (e) {
-        // Handle exceptions, e.g., network issues
         print("Error: $e");
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
       }
-    } else {
-      // Handle form validation failure
-    }
+    } 
   }
 
   @override
@@ -112,6 +118,12 @@ class _SigninScreenState extends State<SigninScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 25),
                           child: TextFormField(
                             controller: _passwordController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please Enter your Password";
+                              }
+                              return null;
+                            },
                             obscureText: _isObscurePassword,
                             onChanged: (value) {
                               setState(() {

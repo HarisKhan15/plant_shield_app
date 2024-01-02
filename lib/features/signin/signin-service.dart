@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
-Future<bool> fetchAlbum(String username, String password) async {
+
+String baseUrl = 'https://c14b-58-27-134-33.ngrok-free.app';
+
+Future<String> loginUser(String username, String password) async {
   var requestBody = {
     "username": username,
     "password": password,
@@ -8,13 +13,13 @@ Future<bool> fetchAlbum(String username, String password) async {
 
   final response = await http.post(
     Uri.parse(
-        'https://58a1-58-27-134-33.ngrok-free.app/signin'), // Replace with your actual endpoint
+        '$baseUrl/signin'), // Replace with your actual endpoint
     body: requestBody,
   );
 
   if (response.statusCode == 200) {
-    return true; // Successful authentication
+    return "OK"; // Successful authentication
   } else {
-    return false; // Failed authentication
+    return response.body; // Failed authentication
   }
 }
