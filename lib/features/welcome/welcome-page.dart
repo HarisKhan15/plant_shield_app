@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
-import 'package:plant_shield_app/features/otp/otp-page.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});

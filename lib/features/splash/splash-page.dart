@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:plant_shield_app/features/signin/signin-page.dart';
+import 'package:plant_shield_app/features/login/login-page.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
       () {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => SigninScreen()),
+          MaterialPageRoute(builder: (context) => LoginScreen()),
         );
       },
     );

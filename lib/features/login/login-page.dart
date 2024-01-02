@@ -4,35 +4,44 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
-import 'package:plant_shield_app/features/signin/signin-service.dart';
-import 'package:plant_shield_app/features/signup/signup-page.dart';
 
-class SigninScreen extends StatefulWidget {
-  const SigninScreen({Key? key}) : super(key: key);
+import 'package:plant_shield_app/features/signup/signup-page.dart';
+import 'package:plant_shield_app/services/user-service.dart';
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<SigninScreen> createState() => _SigninScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _SigninScreenState extends State<SigninScreen> {
+class _LoginScreenState extends State<LoginScreen> {
+  final UserService _userService = UserService();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isObscurePassword = true;
   bool _hasText = false;
 
-  void _signIn() async {
+@override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _logIn() async {
     if (_formKey.currentState!.validate()) {
       try {
-        String response = await loginUser(
-            _usernameController.text, _passwordController.text);
-        if (response == "OK") {
+        var response =
+            await _userService.loginUser(_usernameController.text, _passwordController.text);
+        if (response?.statusCode == 200) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
           );
         } else {
-          Map<String, dynamic> errorJson = jsonDecode(response);
+          Map<String, dynamic> errorJson = jsonDecode(response!.body);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(errorJson['error']),
@@ -44,14 +53,14 @@ class _SigninScreenState extends State<SigninScreen> {
       } catch (e) {
         print("Error: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Network error. Please try again.'),
-          duration: Duration(seconds: 2),
-          backgroundColor: Colors.red,
-        ),
-      );
+          SnackBar(
+            content: Text('Network error. Please try again.'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
-    } 
+    }
   }
 
   @override
@@ -207,15 +216,7 @@ class _SigninScreenState extends State<SigninScreen> {
                               width: 255,
                               height: 40,
                               child: ElevatedButton(
-                                onPressed: _signIn,
-                                child: Text(
-                                  'Sign in',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
+                                onPressed: _logIn,
                                 style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(
                                       Color(0xFF449636)),
@@ -223,6 +224,14 @@ class _SigninScreenState extends State<SigninScreen> {
                                       RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(30))),
+                                ),
+                                child: Text(
+                                  'Login In',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             )

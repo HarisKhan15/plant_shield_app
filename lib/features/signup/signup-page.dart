@@ -4,8 +4,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
-import 'package:plant_shield_app/features/signin/signin-page.dart';
-import 'package:plant_shield_app/features/signup/signup-service.dart';
+import 'package:plant_shield_app/features/login/login-page.dart';
+import 'package:plant_shield_app/features/welcome/welcome-page.dart';
+import 'package:plant_shield_app/models/user-registration.dart';
+import 'package:plant_shield_app/services/user-service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -15,6 +17,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  final UserService _userService = UserService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -26,23 +29,27 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _hasText = false;
   bool _hasConfirmText = false;
 
+  UserRegistration _constructRegistrationObject() {
+    return UserRegistration(_emailController.text, _usernameController.text,
+        _passwordController.text);
+  }
+
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
       try {
-        String response = await registerUser(_emailController.text,
-            _usernameController.text, _passwordController.text);
-        if (response == 'OK') {
+        UserRegistration userRegistration = _constructRegistrationObject();
+        var response = await _userService.registerUser(userRegistration);
+        if (response.statusCode == 200) {
           // Navigator.push(
           //   context,
           //   MaterialPageRoute(builder: (context) => OtpScreen()),
           // );
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => WelcomeScreen()),
           );
-        }
-        else {
-          Map<String, dynamic> errorJson = jsonDecode(response);
+        } else {
+          Map<String, dynamic> errorJson = jsonDecode(response.body);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(errorJson['error']),
@@ -60,7 +67,6 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         );
       }
-      
     }
   }
 
@@ -101,8 +107,16 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: TextFormField(
                             controller: _emailController,
                             validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter an email';
+                              if (value!.isEmpty) {
+                                return 'Email is empty';
+                              }
+                              if (!RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$")
+                                  .hasMatch(value)) {
+                                if (value.isNotEmpty) {
+                                  return 'Enter a valid email';
+                                } else {
+                                  return null; // Return null if email is empty and no validation yet
+                                }
                               }
                               return null;
                             },
@@ -296,19 +310,23 @@ class _SignupScreenState extends State<SignupScreen> {
                             Container(
                               width: 255,
                               height: 40,
-                              decoration: BoxDecoration(
-                                color: Color(0xFF449636),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: IconButton(
-                                color: Colors.white,
+                              child: ElevatedButton(
                                 onPressed: _signUp,
-                                icon: Text(
-                                  'Sign up',
+                                style: ButtonStyle(
+                                  backgroundColor: MaterialStateProperty.all(
+                                      Color(0xFF449636)),
+                                  shape: MaterialStateProperty.all(
+                                      RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30))),
+                                ),
+                                child: Text(
+                                  'Sign Up',
                                   style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700),
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                                 ),
                               ),
                             )
@@ -389,7 +407,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => SigninScreen()),
+                                      builder: (context) => LoginScreen()),
                                 );
                               },
                               child: Text(
