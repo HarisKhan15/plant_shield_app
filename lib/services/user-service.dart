@@ -7,10 +7,10 @@ import 'package:plant_shield_app/models/user.dart';
 import 'package:http/http.dart' as http;
 
 class UserService extends ChangeNotifier {
-  Future<User?> getLoggedInUser(String emailOrNumber) async {
+  Future<User?> getLoggedInUser(String username) async {
     try {
       final response = await http.get(
-        UrlConfig.buildUri('user/getLoggedInUser/${emailOrNumber}'),
+        UrlConfig.buildUri('user/getLoggedInUser/$username'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -22,10 +22,10 @@ class UserService extends ChangeNotifier {
 
         return loggedInUser;
       }
-      return null;
     } catch (e) {
       e.toString();
     }
+    return null;
   }
 
   Future<http.Response?> loginUser(String username, String password) async {
@@ -47,7 +47,7 @@ class UserService extends ChangeNotifier {
   Future<http.Response> registerUser(UserRegistration userRegistration) async {
     try {
     var requestBody = userRegistration.toForm();
-
+    
     final response = await http.post(
       UrlConfig.buildUri("register"), // Replace with your actual endpoint
       body: requestBody,

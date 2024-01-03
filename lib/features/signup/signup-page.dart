@@ -3,7 +3,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:plant_shield_app/features/login/login-page.dart';
 import 'package:plant_shield_app/features/welcome/welcome-page.dart';
 import 'package:plant_shield_app/models/user-registration.dart';
@@ -44,9 +43,11 @@ class _SignupScreenState extends State<SignupScreen> {
           //   context,
           //   MaterialPageRoute(builder: (context) => OtpScreen()),
           // );
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => WelcomeScreen()),
+            MaterialPageRoute(
+                builder: (context) =>
+                    WelcomeScreen(username: _usernameController.text)),
           );
         } else {
           Map<String, dynamic> errorJson = jsonDecode(response.body);
@@ -68,6 +69,15 @@ class _SignupScreenState extends State<SignupScreen> {
         );
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 
   @override
