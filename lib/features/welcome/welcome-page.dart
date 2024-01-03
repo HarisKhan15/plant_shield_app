@@ -2,10 +2,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:plant_shield_app/models/profile.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:plant_shield_app/services/profile-service.dart';
 
 class WelcomeScreen extends StatefulWidget {
   final String username;
-  
+
   const WelcomeScreen({super.key, required this.username});
 
   @override
@@ -13,15 +18,64 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  final TextEditingController _FullnameController = TextEditingController();
+  final ProfileService profileService = ProfileService();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  void _Next() {
+  File? imageFile;
+
+  Future<void> _Next() async {
     if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
+      try {
+        Profile profile = _constructRegistrationObject();
+        var response = await profileService.createProfile(imageFile, profile);
+        if (response != null && response.statusCode == 200) {
+          Navigator.pop(context);
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        } else {
+          Map<String, dynamic> errorJson = jsonDecode(response!.body);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorJson['error']),
+              duration: Duration(seconds: 2),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        print('Error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Network error. Please try again.'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Profile _constructRegistrationObject() {
+    return Profile(
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
+        username: widget.username);
+  }
+
+  Future<void> _getImageFromGallery() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+      imageFile = File(pickedFile.path);
+    });
     }
   }
 
@@ -54,12 +108,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
                             SizedBox(height: 40.0),
 //profile
-                            CircleAvatar(
-                              radius: 55.0,
-                              backgroundImage: AssetImage('assets/profile.png'),
+                            GestureDetector(
+                              onTap: _getImageFromGallery,
+                              child: CircleAvatar(
+                                radius: 65.0,
+                                backgroundImage: imageFile != null
+                                    ? FileImage(imageFile!)
+                                        as ImageProvider<Object>?
+                                    : AssetImage('assets/profile.png'),
+                              ),
                             ),
-
-                            SizedBox(height: 20.0),
+                            SizedBox(height: 5),
 //divider
                             Container(
                               width: 324,
@@ -69,16 +128,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   height: 80),
                             ),
 
-                            SizedBox(height: 20.0),
+                            SizedBox(height: 10),
                             //fullname
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 25),
                               child: TextFormField(
-                                controller: _FullnameController,
+                                controller: _firstNameController,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter your Fullname';
+                                    return 'Please enter your first name';
                                   }
                                   return null;
                                 },
@@ -86,7 +145,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   contentPadding: EdgeInsets.symmetric(
                                       vertical: 12, horizontal: 12),
                                   fillColor: Colors.grey.shade100,
-                                  hintText: 'FullName',
+                                  hintText: 'First Name',
                                   hintStyle: TextStyle(fontSize: 12),
                                   border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10)),
@@ -99,7 +158,36 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 ),
                               ),
                             ),
-
+                            SizedBox(height: 20.0),
+                            //fullname
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 25),
+                              child: TextFormField(
+                                controller: _lastNameController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your last name';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 12, horizontal: 12),
+                                  fillColor: Colors.grey.shade100,
+                                  hintText: 'last Name',
+                                  hintStyle: TextStyle(fontSize: 12),
+                                  border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10)),
+                                  suffixIcon: SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: Image.asset('assets/user.png'),
+                                  ),
+                                  filled: true,
+                                ),
+                              ),
+                            ),
                             SizedBox(height: 30.0),
 
                             Row(
