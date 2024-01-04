@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/welcome/welcome-page.dart';
 
 class OtpScreen extends StatefulWidget {
@@ -68,7 +69,7 @@ class _OtpScreenState extends State<OtpScreen> {
                           TextSpan(
                             text: "abc.123@gmail.com",
                             style: TextStyle(
-                                color: Color(0xFF58964D), fontSize: 13),
+                                color: Constants.primaryColor, fontSize: 13),
                           ),
                           TextSpan(
                             text: " for verification.",
@@ -121,7 +122,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         width: 255,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: Color(0xFF449636),
+                          color: Constants.primaryColor,
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: IconButton(
@@ -176,7 +177,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             decoration: TextDecoration.underline,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
-                            color: Color(0xFF58964D),
+                            color: Constants.primaryColor,
                           ),
                         ),
                       ),

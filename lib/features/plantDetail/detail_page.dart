@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plant_shield_app/features/home/constants.dart';
+import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
 
 class DetailPage extends StatefulWidget {
@@ -164,36 +164,36 @@ class _DetailPageState extends State<DetailPage> {
                           const SizedBox(
                             height: 10,
                           ),
-                          Text(
-                            r'$' + _plantList[widget.plantId].price.toString(),
-                            style: TextStyle(
-                              color: Constants.blackColor,
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          // Text(
+                          //   r'$' + _plantList[widget.plantId].price.toString(),
+                          //   style: TextStyle(
+                          //     color: Constants.blackColor,
+                          //     fontSize: 24.0,
+                          //     fontWeight: FontWeight.bold,
+                          //   ),
+                          // ),
                         ],
                       ),
                       Row(
                         children: [
-                          Text(
-                            _plantList[widget.plantId].rating.toString(),
-                            style: TextStyle(
-                              fontSize: 30.0,
-                              color: Constants.primaryColor,
-                            ),
-                          ),
-                          Icon(
-                            Icons.star,
-                            size: 30.0,
-                            color: Constants.primaryColor,
-                          ),
+                          // Text(
+                          //   _plantList[widget.plantId].rating.toString(),
+                          //   style: TextStyle(
+                          //     fontSize: 30.0,
+                          //     color: Constants.primaryColor,
+                          //   ),
+                          // ),
+                          // Icon(
+                          //   Icons.star,
+                          //   size: 30.0,
+                          //   color: Constants.primaryColor,
+                          // ),
                         ],
                       ),
                     ],
                   ),
                   const SizedBox(
-                    height: 5.0,
+                    height: 7.0,
                   ),
                   Expanded(
                     child: Text(
@@ -215,67 +215,67 @@ class _DetailPageState extends State<DetailPage> {
       floatingActionButton: SizedBox(
         width: size.width * .9,
         height: 50,
-        child: Row(
-          children: [
-            Container(
-              height: 50,
-              width: 50,
-              child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      bool isSelected = toggleIsSelected(
-                          _plantList[widget.plantId].isSelected);
+        // child: Row(
+        //   children: [
+        //     Container(
+        //       height: 50,
+        //       width: 50,
+        //       child: IconButton(
+        //           onPressed: () {
+        //             setState(() {
+        //               bool isSelected = toggleIsSelected(
+        //                   _plantList[widget.plantId].isSelected);
 
-                      _plantList[widget.plantId].isSelected = isSelected;
-                    });
-                  },
-                  icon: Icon(
-                    Icons.shopping_cart,
-                    color: _plantList[widget.plantId].isSelected == true
-                        ? Colors.white
-                        : Constants.primaryColor,
-                  )),
-              decoration: BoxDecoration(
-                  color: _plantList[widget.plantId].isSelected == true
-                      ? Constants.primaryColor.withOpacity(.5)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(50),
-                  boxShadow: [
-                    BoxShadow(
-                      offset: const Offset(0, 1),
-                      blurRadius: 5,
-                      color: Constants.primaryColor.withOpacity(.3),
-                    ),
-                  ]),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Constants.primaryColor,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        offset: const Offset(0, 1),
-                        blurRadius: 5,
-                        color: Constants.primaryColor.withOpacity(.3),
-                      )
-                    ]),
-                child: const Center(
-                  child: Text(
-                    'BUY NOW',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+        //               _plantList[widget.plantId].isSelected = isSelected;
+        //             });
+        //           },
+        //           icon: Icon(
+        //             Icons.shopping_cart,
+        //             color: _plantList[widget.plantId].isSelected == true
+        //                 ? Colors.white
+        //                 : Constants.primaryColor,
+        //           )),
+        //       decoration: BoxDecoration(
+        //           color: _plantList[widget.plantId].isSelected == true
+        //               ? Constants.primaryColor.withOpacity(.5)
+        //               : Colors.white,
+        //           borderRadius: BorderRadius.circular(50),
+        //           boxShadow: [
+        //             BoxShadow(
+        //               offset: const Offset(0, 1),
+        //               blurRadius: 5,
+        //               color: Constants.primaryColor.withOpacity(.3),
+        //             ),
+        //           ]),
+        //     ),
+        //     const SizedBox(
+        //       width: 20,
+        //     ),
+        //     Expanded(
+        //       child: Container(
+        //         decoration: BoxDecoration(
+        //             color: Constants.primaryColor,
+        //             borderRadius: BorderRadius.circular(10),
+        //             boxShadow: [
+        //               BoxShadow(
+        //                 offset: const Offset(0, 1),
+        //                 blurRadius: 5,
+        //                 color: Constants.primaryColor.withOpacity(.3),
+        //               )
+        //             ]),
+        //         child: const Center(
+        //           child: Text(
+        //             'BUY NOW',
+        //             style: TextStyle(
+        //               color: Colors.white,
+        //               fontSize: 20.0,
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // ),
       ),
     );
   }

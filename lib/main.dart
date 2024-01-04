@@ -24,7 +24,7 @@ void main() {
 }
 
 class UrlConfig {
-static const String baseUrl = "https://f1a1-111-88-27-204.ngrok-free.app/";
+static const String baseUrl = "https://316a-111-88-40-138.ngrok-free.app/";
 
 
   static Uri buildUri(String path) {

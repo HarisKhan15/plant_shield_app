@@ -1,8 +1,10 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/models/profile.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -28,6 +30,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Future<void> _Next() async {
     if (_formKey.currentState!.validate()) {
       try {
+        LoadingDialog.showLoadingDialog(context);
         Profile profile = _constructRegistrationObject();
         var response = await profileService.createProfile(imageFile, profile);
         if (response != null && response.statusCode == 200) {
@@ -102,7 +105,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               style: TextStyle(
                                 fontSize: 32.0,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF236419),
+                                color: Constants.primaryColor,
                               ),
                             ),
 
@@ -197,7 +200,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   width: 255,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: Color(0xFF449636),
+                                    color: Constants.primaryColor,
                                     borderRadius: BorderRadius.circular(30),
                                   ),
                                   child: IconButton(

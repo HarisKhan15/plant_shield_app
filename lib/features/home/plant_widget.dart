@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:plant_shield_app/features/home/constants.dart';
+import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/plantDetail/detail_page.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
 
@@ -81,17 +81,17 @@ class PlantWidget extends StatelessWidget {
                 ),
               ],
             ),
-            Container(
-              padding: const EdgeInsets.only(right: 10),
-              child: Text(
-                r'$' + plantList[index].price.toString(),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
-                  color: Constants.primaryColor,
-                ),
-              ),
-            )
+            // Container(
+            //   padding: const EdgeInsets.only(right: 10),
+            //   child: Text(
+            //     r'$' + plantList[index].price.toString(),
+            //     style: TextStyle(
+            //       fontWeight: FontWeight.bold,
+            //       fontSize: 18.0,
+            //       color: Constants.primaryColor,
+            //     ),
+            //   ),
+            // )
           ],
         ),
       ),

@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/login/login-page.dart';
 import 'package:plant_shield_app/features/welcome/welcome-page.dart';
 import 'package:plant_shield_app/models/user-registration.dart';
@@ -36,6 +37,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
       try {
+        LoadingDialog.showLoadingDialog(context);
         UserRegistration userRegistration = _constructRegistrationObject();
         var response = await _userService.registerUser(userRegistration);
         if (response.statusCode == 200) {

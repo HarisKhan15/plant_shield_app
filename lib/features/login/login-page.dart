@@ -1,10 +1,10 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, sort_child_properties_last, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, sort_child_properties_last, use_build_context_synchronously, depend_on_referenced_packages
 
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
-
+import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/signup/signup-page.dart';
 import 'package:plant_shield_app/services/user-service.dart';
 
@@ -33,9 +33,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _logIn() async {
     if (_formKey.currentState!.validate()) {
       try {
+        LoadingDialog.showLoadingDialog(context);
         var response = await _userService.loginUser(
             _usernameController.text, _passwordController.text);
-        if (response?.statusCode == 200) {
+
+        if (response != null && response.statusCode == 200) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -219,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: _logIn,
                                 style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(
-                                      Color(0xFF449636)),
+                                     Constants.primaryColor),
                                   shape: MaterialStateProperty.all(
                                       RoundedRectangleBorder(
                                           borderRadius:
@@ -251,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             Text('or',
                                 style: TextStyle(
-                                    color: Color(0xFF58964D), fontSize: 16)),
+                                    color: Constants.primaryColor, fontSize: 16)),
                             Container(
                               width: 150,
                               child: Divider(
@@ -321,7 +323,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   decoration: TextDecoration.underline,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
-                                  color: Color(0xFF58964D),
+                                  color: Constants.primaryColor,
                                 ),
                               ),
                             ),

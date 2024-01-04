@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plant_shield_app/features/home/constants.dart';
+import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:plant_shield_app/features/home/plant_widget.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
