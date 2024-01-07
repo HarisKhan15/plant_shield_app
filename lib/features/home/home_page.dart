@@ -113,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: Image.asset(
-                'assets/PS logo.png',
+                'assets/logo3.png',
                 width: 50,
                 height: 50,
                 fit: BoxFit.contain,

@@ -46,15 +46,15 @@ class UserService extends ChangeNotifier {
 
   Future<http.Response> registerUser(UserRegistration userRegistration) async {
     try {
-    var requestBody = userRegistration.toForm();
-    
-    final response = await http.post(
-      UrlConfig.buildUri("register"), // Replace with your actual endpoint
-      body: requestBody,
-    );
+      var requestBody = userRegistration.toForm();
 
-    return response;
-    } catch(e) {
+      final response = await http.post(
+        UrlConfig.buildUri("register"), // Replace with your actual endpoint
+        body: requestBody,
+      );
+
+      return response;
+    } catch (e) {
       print('Login error: $e');
       throw Exception('Failed to Sign in. Please try again later.');
     }

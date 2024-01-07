@@ -25,8 +25,7 @@ class _MyplantsScreenState extends State<MyplantsScreen> {
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+            Navigator.of(context).pop();
           },
           child: Container(
             height: 30,

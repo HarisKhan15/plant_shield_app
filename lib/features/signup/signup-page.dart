@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/src/response.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/login/login-page.dart';
 import 'package:plant_shield_app/features/welcome/welcome-page.dart';
@@ -36,35 +37,38 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
+      Response? response;
       try {
         LoadingDialog.showLoadingDialog(context);
         UserRegistration userRegistration = _constructRegistrationObject();
-        var response = await _userService.registerUser(userRegistration);
-        if (response.statusCode == 200) {
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => OtpScreen()),
-          // );
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    WelcomeScreen(username: _usernameController.text)),
-          );
-        } else {
-          Map<String, dynamic> errorJson = jsonDecode(response.body);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorJson['error']),
-              duration: Duration(seconds: 2),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        response = await _userService.registerUser(userRegistration);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Network error. Please try again.'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        Navigator.of(context).pop();
+      }
+      if (response != null && response.statusCode == 200) {
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => OtpScreen()),
+        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  WelcomeScreen(username: _usernameController.text)),
+        );
+      } else {
+        Map<String, dynamic> errorJson = jsonDecode(response!.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorJson['error']),
             duration: Duration(seconds: 2),
             backgroundColor: Colors.red,
           ),
@@ -96,7 +100,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   child: Container(
                     alignment: Alignment.center,
                     child: Image.asset(
-                      'assets/Mylogo.png',
+                      'assets/logo2.png',
                       height: 300,
                     ),
                   ),
