@@ -3,7 +3,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:plant_shield_app/features/login/login-page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,16 +15,25 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  late SharedPreferences loginUser;
+  late bool newuser;
   @override
   void initState() {
     super.initState();
     Timer(
-      Duration(seconds: 2),
-      () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
-        );
+      const Duration(seconds: 2),
+      () async {
+        loginUser = await SharedPreferences.getInstance();
+        newuser = (loginUser.getBool('login') ?? true);
+        if (newuser == false) {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+          );
+        }
       },
     );
   }

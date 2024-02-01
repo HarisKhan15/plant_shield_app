@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/src/response.dart';
@@ -9,6 +10,7 @@ import 'package:plant_shield_app/features/login/login-page.dart';
 import 'package:plant_shield_app/features/welcome/welcome-page.dart';
 import 'package:plant_shield_app/models/user-registration.dart';
 import 'package:plant_shield_app/services/user-service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -29,6 +31,17 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isObscureConfirmPassword = true;
   bool _hasText = false;
   bool _hasConfirmText = false;
+  late SharedPreferences loginUser;
+
+  @override
+  void initState() {
+    super.initState();
+    initializeSharedPreferences();
+  }
+
+  void initializeSharedPreferences() async {
+    loginUser = await SharedPreferences.getInstance();
+  }
 
   UserRegistration _constructRegistrationObject() {
     return UserRegistration(_emailController.text, _usernameController.text,
@@ -58,6 +71,9 @@ class _SignupScreenState extends State<SignupScreen> {
         //   context,
         //   MaterialPageRoute(builder: (context) => OtpScreen()),
         // );
+        loginUser.setBool('login', false);
+        loginUser.setString('username', _usernameController.text);
+        print("heiolawnbsuifbkailnsk sami baig");
         Navigator.push(
           context,
           MaterialPageRoute(

@@ -8,6 +8,7 @@ import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/signup/signup-page.dart';
 import 'package:plant_shield_app/services/user-service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -23,6 +24,26 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isObscurePassword = true;
   bool _hasText = false;
+  late SharedPreferences loginUser;
+  @override
+  void initState() {
+    super.initState();
+    initializeSharedPreferences();
+  }
+
+  void initializeSharedPreferences() async {
+    loginUser = await SharedPreferences.getInstance();
+  }
+
+  // void check_if_already_login() async {
+  //   loginUser = await SharedPreferences.getInstance();
+  //   newuser = (loginUser.getBool('login') ?? true);
+  //   print(newuser);
+  //   if (newuser == false) {
+  //     Navigator.pushReplacement(
+  //         context, MaterialPageRoute(builder: (context) => HomeScreen()));
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -51,6 +72,8 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.of(context).pop();
       }
       if (response != null && response.statusCode == 200) {
+        loginUser.setBool('login', false);
+        loginUser.setString('username', _usernameController.text);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),

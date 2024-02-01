@@ -10,7 +10,7 @@ class UserService extends ChangeNotifier {
   Future<User?> getLoggedInUser(String username) async {
     try {
       final response = await http.get(
-        UrlConfig.buildUri('user/getLoggedInUser/$username'),
+        UrlConfig.buildUri('user/get-loggedin-user/$username'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

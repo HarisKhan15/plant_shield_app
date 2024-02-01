@@ -9,11 +9,15 @@ import 'package:plant_shield_app/features/favorites/favoritePlants_page.dart';
 import 'package:plant_shield_app/features/home/homePlant_widget.dart';
 import 'package:plant_shield_app/features/home/selectedImage.dart';
 import 'package:plant_shield_app/features/home/infocard.dart';
+import 'package:plant_shield_app/features/login/login-page.dart';
 import 'package:plant_shield_app/features/myPlants/myPlants_page.dart';
 import 'package:plant_shield_app/features/plantDetail/detail_page.dart';
 import 'package:plant_shield_app/features/favorites/Favplant_widget.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:plant_shield_app/models/user.dart';
+import 'package:plant_shield_app/services/user-service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -26,6 +30,29 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isExpanded = false;
   File? imageFile;
+  SharedPreferences? logindata;
+  String? username;
+  User? currentUser;
+  UserService userService = UserService();
+
+  @override
+  void initState() {
+    super.initState();
+    initializeVariables();
+  }
+
+  void initializeVariables() async {
+    logindata = await SharedPreferences.getInstance();
+    final String? loggedInUsername = logindata?.getString('username');
+    if (loggedInUsername != null) {
+      final User? user = await userService.getLoggedInUser(loggedInUsername);
+      setState(() {
+        username = loggedInUsername;
+        currentUser = user;
+      });
+    }
+  }
+
   Future<void> _getImageFromGallery() async {
     final picker = ImagePicker();
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
@@ -132,13 +159,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(right: 8.0),
-                    child: infocard(Username: 'wania', FullName: 'wania jamal'),
-                  ),
+                    child: Infocard(
+                      user: currentUser,
+                    ),
+                  )
                 ],
               ),
             ),
             SizedBox(height: 20),
-            //1
+//1
             ListTile(
               leading: Icon(Icons.person_2_outlined,
                   color: Constants.primaryColor, size: 30),
@@ -190,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Constants.primaryColor,
               thickness: 0.6,
             ),
-            //5
+//5
             ListTile(
                 leading: Icon(Icons.favorite_border_outlined,
                     color: Constants.primaryColor, size: 30),
@@ -216,10 +245,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: Icon(Icons.logout_outlined,
                     color: Constants.primaryColor, size: 30),
                 title: Text(
-                  'Log Out',
+                  'Settings',
                   style: TextStyle(fontSize: 18),
                 ),
                 onTap: () {}),
+            Divider(
+              color: Constants.primaryColor,
+              thickness: 0.6,
+            ),
+//5
+            ListTile(
+                leading: Icon(Icons.favorite_border_outlined,
+                    color: Constants.primaryColor, size: 30),
+                title: Text(
+                  'Favorites',
+                  style: TextStyle(fontSize: 18),
+                ),
+                onTap: () {
+                  List<Plant> favoritedPlants =
+                      _plantList.where((plant) => plant.isFavorated).toList();
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => favScreen(
+                            favoritedPlants: favoritedPlants,
+                            removeFromFavorites: (int) {},
+                          )));
+                }),
+            Divider(
+              color: Constants.primaryColor,
+              thickness: 0.6,
+            ),
+            //5
+            ListTile(
+                leading: Icon(Icons.logout_outlined,
+                    color: Constants.primaryColor, size: 30),
+                title: Text(
+                  'Logout',
+                  style: TextStyle(fontSize: 18),
+                ),
+                onTap: () {
+                  logindata?.setBool('login', true);
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                }),
           ],
         ),
       ),

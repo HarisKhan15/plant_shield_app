@@ -1,32 +1,36 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:plant_shield_app/models/user.dart';
 
-class infocard extends StatelessWidget {
-  const infocard({
-    super.key,
-    required this.Username,
-    required this.FullName,
-  });
+class Infocard extends StatelessWidget {
+  const Infocard({super.key, required this.user});
 
-  final String Username, FullName;
+  final User? user;
 
   @override
   Widget build(BuildContext context) {
+    Uint8List bytes =
+        Uint8List.fromList(base64.decode(user?.profilePicture ?? ''));
+
     return ListTile(
-      leading: const CircleAvatar(
-        backgroundColor: Colors.white24,
-        child: Icon(
-          CupertinoIcons.person,
-          color: Color(0xFF449636),
-          size: 40,
-        ),
+      leading: CircleAvatar(
+        radius: 30,
+        backgroundColor: Colors.blue,
+        backgroundImage: bytes.isNotEmpty
+            ? Image.memory(
+                bytes,
+                width: 500,
+                fit: BoxFit.cover,
+              ).image
+            : AssetImage('assets/profile.png'),
       ),
       title: Text(
-        Username,
+        "${user?.firstName ?? ''} ${user?.lastName ?? ''}",
         style: TextStyle(fontSize: 18),
       ),
       subtitle: Text(
-        FullName,
+        "@${user?.username ?? ''}",
         style: TextStyle(fontSize: 15),
       ),
     );
