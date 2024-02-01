@@ -167,16 +167,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SizedBox(height: 20),
-//1
+            //1
             ListTile(
-              leading: Icon(Icons.person_2_outlined,
-                  color: Constants.primaryColor, size: 30),
-              title: Text(
-                'Profile',
-                style: TextStyle(fontSize: 18),
-              ),
-              onTap: () {},
-            ),
+                leading: Icon(Icons.group_outlined,
+                    color: Constants.primaryColor, size: 30),
+                title: Text(
+                  'Community',
+                  style: TextStyle(fontSize: 18),
+                ),
+                onTap: () {}),
             Divider(
               color: Constants.primaryColor,
               thickness: 0.6,
@@ -204,77 +203,29 @@ class _HomeScreenState extends State<HomeScreen> {
               color: Constants.primaryColor,
               thickness: 0.6,
             ),
+
             //3
             ListTile(
-                leading: Icon(Icons.group_outlined,
+                leading: Icon(Icons.favorite_border_outlined,
                     color: Constants.primaryColor, size: 30),
                 title: Text(
-                  'Community',
+                  'Favorites',
                   style: TextStyle(fontSize: 18),
                 ),
-                onTap: () {}),
+                onTap: () {
+                  List<Plant> favoritedPlants =
+                      _plantList.where((plant) => plant.isFavorated).toList();
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => favScreen(
+                            favoritedPlants: favoritedPlants,
+                            removeFromFavorites: (int) {},
+                          )));
+                }),
+            Divider(
+              color: Constants.primaryColor,
+              thickness: 0.6,
+            ),
             //4
-
-            Divider(
-              color: Constants.primaryColor,
-              thickness: 0.6,
-            ),
-//5
-            ListTile(
-                leading: Icon(Icons.favorite_border_outlined,
-                    color: Constants.primaryColor, size: 30),
-                title: Text(
-                  'Favorites',
-                  style: TextStyle(fontSize: 18),
-                ),
-                onTap: () {
-                  List<Plant> favoritedPlants =
-                      _plantList.where((plant) => plant.isFavorated).toList();
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => favScreen(
-                            favoritedPlants: favoritedPlants,
-                            removeFromFavorites: (int) {},
-                          )));
-                }),
-            Divider(
-              color: Constants.primaryColor,
-              thickness: 0.6,
-            ),
-            //5
-            ListTile(
-                leading: Icon(Icons.logout_outlined,
-                    color: Constants.primaryColor, size: 30),
-                title: Text(
-                  'Settings',
-                  style: TextStyle(fontSize: 18),
-                ),
-                onTap: () {}),
-            Divider(
-              color: Constants.primaryColor,
-              thickness: 0.6,
-            ),
-//5
-            ListTile(
-                leading: Icon(Icons.favorite_border_outlined,
-                    color: Constants.primaryColor, size: 30),
-                title: Text(
-                  'Favorites',
-                  style: TextStyle(fontSize: 18),
-                ),
-                onTap: () {
-                  List<Plant> favoritedPlants =
-                      _plantList.where((plant) => plant.isFavorated).toList();
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => favScreen(
-                            favoritedPlants: favoritedPlants,
-                            removeFromFavorites: (int) {},
-                          )));
-                }),
-            Divider(
-              color: Constants.primaryColor,
-              thickness: 0.6,
-            ),
-            //5
             ListTile(
                 leading: Icon(Icons.logout_outlined,
                     color: Constants.primaryColor, size: 30),

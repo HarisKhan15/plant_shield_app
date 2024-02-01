@@ -37,8 +37,7 @@ class _FavScreenState extends State<favScreen> {
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+            Navigator.of(context).pop(context);
           },
           child: Container(
             height: 30,

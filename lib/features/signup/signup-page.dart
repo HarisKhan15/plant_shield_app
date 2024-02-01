@@ -73,7 +73,6 @@ class _SignupScreenState extends State<SignupScreen> {
         // );
         loginUser.setBool('login', false);
         loginUser.setString('username', _usernameController.text);
-        print("heiolawnbsuifbkailnsk sami baig");
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -185,7 +184,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 12),
                               fillColor: Colors.grey.shade100,
-                              hintText: 'UserName',
+                              hintText: 'Username',
                               hintStyle: TextStyle(fontSize: 12),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10)),
