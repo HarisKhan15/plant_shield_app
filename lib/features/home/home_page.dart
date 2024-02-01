@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-          toolbarHeight: 75,
+          toolbarHeight: size.width < 600 ? 56 : 65,
           backgroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
@@ -120,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(
                 Icons.menu,
                 color: Constants.primaryColor,
+                size: size.width < 600 ? 30 : 35,
               ),
               onPressed: () {
                 _scaffoldKey.currentState?.openDrawer();
@@ -158,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
+                    padding: EdgeInsets.symmetric(vertical: size.height * 0.02),
                     child: Infocard(
                       user: currentUser,
                     ),
@@ -331,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 type: PageTransitionType.bottomToTop));
                       },
                       child: Container(
-                        width: 200,
+                        width: size.width * 0.5,
                         margin: const EdgeInsets.symmetric(horizontal: 10),
                         child: Stack(
                           children: [
@@ -395,24 +396,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ),
                             ),
-                            // Positioned(
-                            //   bottom: 15,
-                            //   right: 20,
-                            //   child: Container(
-                            //     padding: const EdgeInsets.symmetric(
-                            //         horizontal: 10, vertical: 2),
-                            //     decoration: BoxDecoration(
-                            //       color: Colors.white,
-                            //       borderRadius: BorderRadius.circular(20),
-                            //     ),
-                            //     child: Text(
-                            //       r'$' + _plantList[index].price.toString(),
-                            //       style: TextStyle(
-                            //           color: Constants.primaryColor,
-                            //           fontSize: 16),
-                            //     ),
-                            //   ),
-                            // ),
                           ],
                         ),
                         decoration: BoxDecoration(
@@ -435,7 +418,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
-              height: size.height * .35,
+              height: size.height * .36,
               child: Stack(
                 children: [
                   ListView.builder(
@@ -468,8 +451,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   Positioned(
-                    bottom: 25.0,
-                    right: 16.0,
+                    right: size.width * 0.04,
+                    bottom: size.height * 0.04,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.end,

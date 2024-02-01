@@ -20,17 +20,6 @@ class SelectedImageScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.file(imageFile),
-            // SizedBox(height: 20),
-            // ElevatedButton(
-            //   onPressed: () {},
-            //   style: ElevatedButton.styleFrom(
-            //     primary: Constants.primaryColor,
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(20.0),
-            //     ),
-            //   ),
-            //   child: Text('Add to My Plants'),
-            // ),
           ],
         ),
       ),

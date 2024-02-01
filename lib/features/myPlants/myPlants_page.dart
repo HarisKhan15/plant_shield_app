@@ -14,13 +14,13 @@ class MyplantsScreen extends StatefulWidget {
   State<MyplantsScreen> createState() => _MyplantsScreenState();
 }
 
- class _MyplantsScreenState extends State<MyplantsScreen> {
-   @override
-   Widget build(BuildContext context) {
+class _MyplantsScreenState extends State<MyplantsScreen> {
+  @override
+  Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 75,
+        toolbarHeight: size.width < 600 ? 56 : 65, 
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -34,6 +34,7 @@ class MyplantsScreen extends StatefulWidget {
             child: Icon(
               Icons.arrow_back_rounded,
               color: Constants.primaryColor,
+              size: size.width < 600 ? 24 : 30, 
             ),
           ),
         ),
@@ -59,34 +60,35 @@ class MyplantsScreen extends StatefulWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: 100,
+                    height: size.height * 0.15, 
                     child: Image.asset('assets/favorited.png'),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
                   Text(
-                    'Your favorited Plants',
+                    'Your Plants',
                     style: TextStyle(
                       color: Constants.primaryColor,
                       fontWeight: FontWeight.w300,
-                      fontSize: 18,
+                      fontSize: size.width < 600 ? 16 : 18, 
                     ),
                   ),
                 ],
               ),
             )
           : Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
-              height: size.height * .5,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              height: size.height * 1,
               child: ListView.builder(
                   itemCount: widget.favoritedPlants.length,
                   scrollDirection: Axis.vertical,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (BuildContext context, int index) {
                     return MyPlantWidget(
-                        index: index, plantList: widget.favoritedPlants, 
-                            );
+                      index: index,
+                      plantList: widget.favoritedPlants,
+                    );
                   }),
             ),
     );

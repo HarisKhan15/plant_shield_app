@@ -31,7 +31,7 @@ class _FavScreenState extends State<favScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 75,
+        toolbarHeight: size.width < 600 ? 56 : 65,
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -88,31 +88,32 @@ class _FavScreenState extends State<favScreen> {
               ),
             )
           : Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
-              height: size.height * 1.0,
+              padding: EdgeInsets.symmetric(
+                horizontal: size.width * 0.07,
+              ),
               child: ListView.builder(
                 itemCount: (widget.favoritedPlants.length / 2).ceil(),
                 itemBuilder: (BuildContext context, int index) {
-                  int startIndex =
-                      index * 2; // Calculate the starting index for each row
-                  int endIndex =
-                      (index + 1) * 2; // Calculate the end index for each row
+                  int startIndex = index * 2;
+                  int endIndex = (index + 1) * 2;
                   endIndex = endIndex > widget.favoritedPlants.length
                       ? widget.favoritedPlants.length
                       : endIndex;
-
                   List<Plant> currentRow =
                       widget.favoritedPlants.sublist(startIndex, endIndex);
-
                   return Row(
-                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: List.generate(
                       currentRow.length,
                       (i) {
                         return Container(
-                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          margin: EdgeInsets.fromLTRB(
+                            i == 0 ? 0 : size.width * 0.02,
+                            0,
+                            i == currentRow.length - 1 ? 0 : size.width * 0.02,
+                            0,
+                          ),
                           width: size.width * 0.41,
-                          height: size.height * 0.25,
+                          height: size.height * 0.28,
                           child: FavPlantWidget(
                             index: startIndex + i,
                             plantList: widget.favoritedPlants,

@@ -48,9 +48,11 @@ class _FavPlantWidgetState extends State<FavPlantWidget> {
           color: Constants.primaryColor.withOpacity(.1),
           borderRadius: BorderRadius.circular(10),
         ),
-        height: 80.0,
-        padding: const EdgeInsets.only(left: 10, top: 10),
-        margin: const EdgeInsets.only(bottom: 10, top: 10),
+        height: size.height * 0.1,
+        padding:
+            EdgeInsets.only(left: size.width * 0.03, top: size.width * 0.03),
+        margin: EdgeInsets.only(
+            bottom: size.height * 0.01, top: size.height * 0.01),
         width: size.width,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -87,7 +89,9 @@ class _FavPlantWidgetState extends State<FavPlantWidget> {
                         widget.plantList[widget.index].plantName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: size.width < 600
+                              ? size.height * 0.021
+                              : size.height * 0.025,
                           color: Constants.blackColor,
                         ),
                       ),
@@ -107,11 +111,13 @@ class _FavPlantWidgetState extends State<FavPlantWidget> {
               },
               child: Container(
                 padding: const EdgeInsets.all(8.0),
-                margin: const EdgeInsets.only(right: 19, bottom: 75),
+                margin: const EdgeInsets.only(right: 15, bottom: 120),
                 child: Icon(
                   widget.plantList[widget.index].isFavorated
                       ? Icons.favorite
                       : Icons.favorite_border,
+                  size:
+                      size.width < 600 ? 24.0 : 30.0, 
                   color: Constants.primaryColor,
                 ),
                 decoration: BoxDecoration(

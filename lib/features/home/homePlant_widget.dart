@@ -49,8 +49,13 @@ class _HomePlantWidgetState extends State<HomePlantWidget> {
           borderRadius: BorderRadius.circular(10),
         ),
         height: 80.0,
-        padding: const EdgeInsets.only(left: 10, top: 10),
-        margin: const EdgeInsets.only(bottom: 10, top: 10),
+        padding: EdgeInsets.only(
+          left: size.width *0.03, 
+          top:size.height *0.02, 
+        ),
+        margin: EdgeInsets.only(
+          top: size.height * 0.02, 
+        ),
         width: size.width,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -60,34 +65,44 @@ class _HomePlantWidgetState extends State<HomePlantWidget> {
               clipBehavior: Clip.none,
               children: [
                 Container(
-                  width: 60.0,
-                  height: 60.0,
+                  width: size.width * 0.15,
+                  height: size.width * 0.15,
+                  margin: EdgeInsets.only(
+                    top: size.height * 0.02, 
+                  ),
                   decoration: BoxDecoration(
                     color: Constants.primaryColor.withOpacity(.8),
                     shape: BoxShape.circle,
                   ),
                 ),
                 Positioned(
-                  bottom: 5,
+                  bottom: size.height * 0.01,
                   left: 0,
                   right: 0,
                   child: SizedBox(
-                    height: 80.0,
+                    height: size.height * 0.1,
                     child: Image.asset(widget.plantList[widget.index].imageURL),
                   ),
                 ),
                 Positioned(
-                  bottom: 5,
+                  bottom: 25,
                   left: 80,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.plantList[widget.index].category),
+                      Text(
+                        widget.plantList[widget.index].category,
+                        style: TextStyle(
+                          fontSize: size.width < 600 ? 16.0 : 18.0,
+                          color: Constants.blackColor,
+                        ),
+                      ),
+                      SizedBox(height: 2),
                       Text(
                         widget.plantList[widget.index].plantName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: size.width < 600 ? 18.0 : 20.0,
                           color: Constants.blackColor,
                         ),
                       ),
