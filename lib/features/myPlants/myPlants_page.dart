@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
+import 'package:plant_shield_app/features/favorites/Favplant_widget.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
-import 'package:plant_shield_app/features/home/plant_widget.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
+import 'package:plant_shield_app/features/myPlants/Myplant_widget.dart';
 
 class MyplantsScreen extends StatefulWidget {
   final List<Plant> favoritedPlants;
@@ -13,9 +14,9 @@ class MyplantsScreen extends StatefulWidget {
   State<MyplantsScreen> createState() => _MyplantsScreenState();
 }
 
-class _MyplantsScreenState extends State<MyplantsScreen> {
-  @override
-  Widget build(BuildContext context) {
+ class _MyplantsScreenState extends State<MyplantsScreen> {
+   @override
+   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -83,8 +84,9 @@ class _MyplantsScreenState extends State<MyplantsScreen> {
                   scrollDirection: Axis.vertical,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (BuildContext context, int index) {
-                    return PlantWidget(
-                        index: index, plantList: widget.favoritedPlants);
+                    return MyPlantWidget(
+                        index: index, plantList: widget.favoritedPlants, 
+                            );
                   }),
             ),
     );

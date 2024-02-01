@@ -5,11 +5,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
+import 'package:plant_shield_app/features/favorites/favoritePlants_page.dart';
+import 'package:plant_shield_app/features/home/homePlant_widget.dart';
 import 'package:plant_shield_app/features/home/selectedImage.dart';
 import 'package:plant_shield_app/features/home/infocard.dart';
-import 'package:plant_shield_app/features/myplants/myPlants_page.dart';
+import 'package:plant_shield_app/features/myPlants/myPlants_page.dart';
 import 'package:plant_shield_app/features/plantDetail/detail_page.dart';
-import 'package:plant_shield_app/features/home/plant_widget.dart';
+import 'package:plant_shield_app/features/favorites/Favplant_widget.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -138,16 +140,13 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 20),
             //1
             ListTile(
-              leading: Icon(Icons.home_outlined,
+              leading: Icon(Icons.person_2_outlined,
                   color: Constants.primaryColor, size: 30),
               title: Text(
-                'Home',
+                'Profile',
                 style: TextStyle(fontSize: 18),
               ),
-              onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => HomeScreen()));
-              },
+              onTap: () {},
             ),
             Divider(
               color: Constants.primaryColor,
@@ -193,10 +192,31 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             //5
             ListTile(
-                leading: Icon(Icons.settings_outlined,
+                leading: Icon(Icons.favorite_border_outlined,
                     color: Constants.primaryColor, size: 30),
                 title: Text(
-                  'Settings',
+                  'Favorites',
+                  style: TextStyle(fontSize: 18),
+                ),
+                onTap: () {
+                  List<Plant> favoritedPlants =
+                      _plantList.where((plant) => plant.isFavorated).toList();
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => favScreen(
+                            favoritedPlants: favoritedPlants,
+                            removeFromFavorites: (int) {},
+                          )));
+                }),
+            Divider(
+              color: Constants.primaryColor,
+              thickness: 0.6,
+            ),
+            //5
+            ListTile(
+                leading: Icon(Icons.logout_outlined,
+                    color: Constants.primaryColor, size: 30),
+                title: Text(
+                  'Log Out',
                   style: TextStyle(fontSize: 18),
                 ),
                 onTap: () {}),
@@ -417,13 +437,21 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                         },
-                        child: PlantWidget(index: index, plantList: _plantList),
+                        child: HomePlantWidget(
+                          index: index,
+                          plantList: _plantList,
+                          onRemove: (removedIndex) {
+                            setState(() {
+                              _plantList.removeAt(removedIndex);
+                            });
+                          },
+                        ),
                       );
                     },
                   ),
                   Positioned(
-                    bottom: 25.0, // Adjust the position as needed
-                    right: 16.0, // Adjust the position as needed
+                    bottom: 25.0,
+                    right: 16.0,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.end,
