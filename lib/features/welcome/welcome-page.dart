@@ -1,8 +1,11 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:http/src/response.dart';
+import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/models/profile.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -27,32 +30,36 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   Future<void> _Next() async {
     if (_formKey.currentState!.validate()) {
+      Response? response;
       try {
+        LoadingDialog.showLoadingDialog(context);
         Profile profile = _constructRegistrationObject();
-        var response = await profileService.createProfile(imageFile, profile);
-        if (response != null && response.statusCode == 200) {
-          Navigator.pop(context);
-          Navigator.pop(context);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-        } else {
-          Map<String, dynamic> errorJson = jsonDecode(response!.body);
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorJson['error']),
-              duration: Duration(seconds: 2),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        response = await profileService.createProfile(imageFile, profile);
       } catch (e) {
         print('Error: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Network error. Please try again.'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        Navigator.of(context).pop();
+      }
+      if (response != null && response.statusCode == 200) {
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      } else {
+        Map<String, dynamic> errorJson = jsonDecode(response!.body);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorJson['error']),
             duration: Duration(seconds: 2),
             backgroundColor: Colors.red,
           ),
@@ -74,8 +81,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
     if (pickedFile != null) {
       setState(() {
-      imageFile = File(pickedFile.path);
-    });
+        imageFile = File(pickedFile.path);
+      });
     }
   }
 
@@ -102,7 +109,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               style: TextStyle(
                                 fontSize: 32.0,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF236419),
+                                color: Constants.primaryColor,
                               ),
                             ),
 
@@ -197,7 +204,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   width: 255,
                                   height: 40,
                                   decoration: BoxDecoration(
-                                    color: Color(0xFF449636),
+                                    color: Constants.primaryColor,
                                     borderRadius: BorderRadius.circular(30),
                                   ),
                                   child: IconButton(

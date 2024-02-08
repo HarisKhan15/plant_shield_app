@@ -1,12 +1,14 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, sort_child_properties_last, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, sort_child_properties_last, use_build_context_synchronously, depend_on_referenced_packages
 
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:http/src/response.dart';
+import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
-
+import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/signup/signup-page.dart';
 import 'package:plant_shield_app/services/user-service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -22,6 +24,26 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isObscurePassword = true;
   bool _hasText = false;
+  late SharedPreferences loginUser;
+  @override
+  void initState() {
+    super.initState();
+    initializeSharedPreferences();
+  }
+
+  void initializeSharedPreferences() async {
+    loginUser = await SharedPreferences.getInstance();
+  }
+
+  // void check_if_already_login() async {
+  //   loginUser = await SharedPreferences.getInstance();
+  //   newuser = (loginUser.getBool('login') ?? true);
+  //   print(newuser);
+  //   if (newuser == false) {
+  //     Navigator.pushReplacement(
+  //         context, MaterialPageRoute(builder: (context) => HomeScreen()));
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -32,29 +54,35 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _logIn() async {
     if (_formKey.currentState!.validate()) {
+      Response? response;
       try {
-        var response = await _userService.loginUser(
+        LoadingDialog.showLoadingDialog(context);
+        response = await _userService.loginUser(
             _usernameController.text, _passwordController.text);
-        if (response?.statusCode == 200) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-        } else {
-          Map<String, dynamic> errorJson = jsonDecode(response!.body);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(errorJson['error']),
-              duration: Duration(seconds: 2),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
       } catch (e) {
         print("Error: $e");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Network error. Please try again.'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        Navigator.of(context).pop();
+      }
+      if (response != null && response.statusCode == 200) {
+        loginUser.setBool('login', false);
+        loginUser.setString('username', _usernameController.text);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      } else {
+        Map<String, dynamic> errorJson = jsonDecode(response!.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorJson['error']),
             duration: Duration(seconds: 2),
             backgroundColor: Colors.red,
           ),
@@ -77,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Container(
                     alignment: Alignment.center,
                     child: Image.asset(
-                      'assets/Mylogo.png',
+                      'assets/logo2.png',
                       height: 300,
                     ),
                   ),
@@ -219,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 onPressed: _logIn,
                                 style: ButtonStyle(
                                   backgroundColor: MaterialStateProperty.all(
-                                      Color(0xFF449636)),
+                                      Constants.primaryColor),
                                   shape: MaterialStateProperty.all(
                                       RoundedRectangleBorder(
                                           borderRadius:
@@ -251,7 +279,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             Text('or',
                                 style: TextStyle(
-                                    color: Color(0xFF58964D), fontSize: 16)),
+                                    color: Constants.primaryColor,
+                                    fontSize: 16)),
                             Container(
                               width: 150,
                               child: Divider(
@@ -321,7 +350,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   decoration: TextDecoration.underline,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12,
-                                  color: Color(0xFF58964D),
+                                  color: Constants.primaryColor,
                                 ),
                               ),
                             ),

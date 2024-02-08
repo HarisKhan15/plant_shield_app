@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:plant_shield_app/features/home/constants.dart';
+import 'package:plant_shield_app/features/Components/constants.dart';
+import 'package:plant_shield_app/features/favorites/Favplant_widget.dart';
 import 'package:plant_shield_app/features/home/home_page.dart';
-import 'package:plant_shield_app/features/home/plant_widget.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
+import 'package:plant_shield_app/features/myPlants/Myplant_widget.dart';
 
 class MyplantsScreen extends StatefulWidget {
   final List<Plant> favoritedPlants;
@@ -19,14 +20,13 @@ class _MyplantsScreenState extends State<MyplantsScreen> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        toolbarHeight: 75,
+        toolbarHeight: size.width < 600 ? 56 : 65, 
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         leading: GestureDetector(
           onTap: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+            Navigator.of(context).pop();
           },
           child: Container(
             height: 30,
@@ -34,6 +34,7 @@ class _MyplantsScreenState extends State<MyplantsScreen> {
             child: Icon(
               Icons.arrow_back_rounded,
               color: Constants.primaryColor,
+              size: size.width < 600 ? 24 : 30, 
             ),
           ),
         ),
@@ -59,33 +60,35 @@ class _MyplantsScreenState extends State<MyplantsScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    height: 100,
+                    height: size.height * 0.15, 
                     child: Image.asset('assets/favorited.png'),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
                   Text(
-                    'Your favorited Plants',
+                    'Your Plants',
                     style: TextStyle(
                       color: Constants.primaryColor,
                       fontWeight: FontWeight.w300,
-                      fontSize: 18,
+                      fontSize: size.width < 600 ? 16 : 18, 
                     ),
                   ),
                 ],
               ),
             )
           : Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
-              height: size.height * .5,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              height: size.height * 1,
               child: ListView.builder(
                   itemCount: widget.favoritedPlants.length,
                   scrollDirection: Axis.vertical,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (BuildContext context, int index) {
-                    return PlantWidget(
-                        index: index, plantList: widget.favoritedPlants);
+                    return MyPlantWidget(
+                      index: index,
+                      plantList: widget.favoritedPlants,
+                    );
                   }),
             ),
     );
