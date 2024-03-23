@@ -85,15 +85,15 @@ class _HomePlantWidgetState extends State<HomePlantWidget> {
                   ),
                 ),
                 Positioned(
-                  bottom: 25,
-                  left: 80,
+                  bottom: 27,
+                  left: 85,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         widget.plantList[widget.index].category,
                         style: TextStyle(
-                          fontSize: size.width < 600 ? 16.0 : 18.0,
+                          fontSize: size.width < 600 ? 14.0 : 16.0,
                           color: Constants.blackColor,
                         ),
                       ),
@@ -102,7 +102,7 @@ class _HomePlantWidgetState extends State<HomePlantWidget> {
                         widget.plantList[widget.index].plantName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: size.width < 600 ? 18.0 : 20.0,
+                          fontSize: size.width < 600 ? 16.0 : 18.0,
                           color: Constants.blackColor,
                         ),
                       ),
