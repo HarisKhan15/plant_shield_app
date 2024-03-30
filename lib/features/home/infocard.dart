@@ -15,16 +15,7 @@ class Infocard extends StatelessWidget {
     Uint8List bytes =
         Uint8List.fromList(base64.decode(user?.profilePicture ?? ''));
 
-    return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => EditProfileScreen(),
-            ),
-          );
-        },
-        child: ListTile(
+    return  ListTile(
           leading: CircleAvatar(
             radius: 30,
             backgroundColor: Colors.blue,
@@ -44,6 +35,6 @@ class Infocard extends StatelessWidget {
             "@${user?.username ?? ''}",
             style: TextStyle(fontSize: 15),
           ),
-        ));
+        );
   }
 }
