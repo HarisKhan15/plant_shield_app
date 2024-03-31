@@ -14,7 +14,7 @@ import 'package:plant_shield_app/features/myPlants/myPlants_page.dart';
 import 'package:plant_shield_app/features/plantDetail/detail_page.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:plant_shield_app/features/splash/myProfile/MyProfile_page.dart';
+import 'package:plant_shield_app/features/settings/Settings_page.dart';
 import 'package:plant_shield_app/models/user.dart';
 import 'package:plant_shield_app/services/user-service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -318,17 +318,17 @@ void _performLogout(BuildContext context) {
             ),
             ListTile(
               leading: Icon(
-                Icons.person,
+                Icons.settings,
                 color: Constants.primaryColor,
                 size: size.width < 600 ? 24 : 30,
               ),
               title: Text(
-                'My Profile',
+                'Settings',
                 style: TextStyle(fontSize: size.width < 600 ? 16 : 18),
               ),
               onTap: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => ProfileScreen()));
+                    MaterialPageRoute(builder: (context) => SettingsScreen()));
               },
             ),
             Divider(

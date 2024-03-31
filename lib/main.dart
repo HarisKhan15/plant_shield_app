@@ -23,9 +23,10 @@ void main() {
       }));
 }
 class UrlConfig {
-static const String baseUrl = "https://982f-111-88-42-181.ngrok-free.app";
+static const String baseUrl = "http://10.0.2.2:5000";
+static const String baseUrlNgrok = "https://4563-43-246-221-140.ngrok-free.app";
 
   static Uri buildUri(String path) {
-    return Uri.parse("$baseUrl/$path");
+    return Uri.parse("$baseUrlNgrok/$path");
   }
 }
