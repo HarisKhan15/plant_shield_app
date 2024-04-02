@@ -1,5 +1,6 @@
 // ignore_for_file: sort_child_properties_last, prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously, depend_on_referenced_packages
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -43,11 +44,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void initializeVariables() async {
     logindata = await SharedPreferences.getInstance();
-    final String? loggedInUsername = logindata?.getString('username');
-    if (loggedInUsername != null) {
-      final User? user = await userService.getLoggedInUser(loggedInUsername);
+    final String? userObj = logindata?.getString("userObj");
+    if (userObj != null) {
+      User user = User.fromJson(jsonDecode(userObj));
       setState(() {
-        username = loggedInUsername;
+        username = user.username;
         currentUser = user;
       });
     }
@@ -86,97 +87,103 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
   }
+
   void _showLogoutDialog(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Logout' ,style: TextStyle(color: Constants.primaryColor) ),
-        content: Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); 
-            },
-            
-            style: TextButton.styleFrom(
-              primary: Constants.primaryColor, 
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title:
+              Text('Logout', style: TextStyle(color: Constants.primaryColor)),
+          content: Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              style: TextButton.styleFrom(
+                primary: Constants.primaryColor,
+              ),
+              child: Text('Cancel'),
             ),
-            child: Text('Cancel'),
-            
-          ),
-          TextButton(
-            onPressed: () {
-              // Perform logout action here
-              _performLogout(context);
-            },
-            style: TextButton.styleFrom(
-              primary: Constants.primaryColor, 
+            TextButton(
+              onPressed: () {
+                // Perform logout action here
+                _performLogout(context);
+              },
+              style: TextButton.styleFrom(
+                primary: Constants.primaryColor,
+              ),
+              child: Text('Logout'),
             ),
-            child: Text('Logout'),
-          ),
-        ],
-      );
-    },
-  );
-}
+          ],
+        );
+      },
+    );
+  }
 
-void _performLogout(BuildContext context) {
-  // Perform your logout logic here
-  logindata?.setBool('login', true);
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => LoginScreen()),
-  );
-}
-
-
+  void _performLogout(BuildContext context) {
+    // Perform your logout logic here
+    logindata?.setBool('login', true);
+    logindata?.remove("userObj");
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     int selectedIndex = 0;
     Size size = MediaQuery.of(context).size;
-   TextEditingController searchController = TextEditingController();
-   
+    TextEditingController searchController = TextEditingController();
+
     List<Plant> _plantList = Plant.plantList;
 
- void searchForPlant(String searchTerm) {
-    // Filter the plant list based on the search term
-    List<Plant> filteredPlants = Plant.plantList.where((plant) =>
-        plant.plantName.toLowerCase().contains(searchTerm.toLowerCase())).toList();
-    
-    if (filteredPlants.isNotEmpty) {
-      // If the filtered list is not empty, navigate to the detail page of the first plant
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DetailPage(plantId: filteredPlants.first.plantId),
-        ),
-      );
-    } else {
-      // If no plant matches the search term, show an error message
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Plant Not Found' ,style: TextStyle(color: Constants.primaryColor),),
-            content: Text('The plant you are searching for does not exist.'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                 style: TextButton.styleFrom(
-              primary: Constants.primaryColor, 
-            ),
-                child: Text('OK'),
+    void searchForPlant(String searchTerm) {
+      // Filter the plant list based on the search term
+      List<Plant> filteredPlants = Plant.plantList
+          .where((plant) =>
+              plant.plantName.toLowerCase().contains(searchTerm.toLowerCase()))
+          .toList();
+
+      if (filteredPlants.isNotEmpty) {
+        // If the filtered list is not empty, navigate to the detail page of the first plant
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                DetailPage(plantId: filteredPlants.first.plantId),
+          ),
+        );
+      } else {
+        // If no plant matches the search term, show an error message
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(
+                'Plant Not Found',
+                style: TextStyle(color: Constants.primaryColor),
               ),
-            ],
-          );
-        },
-      );
+              content: Text('The plant you are searching for does not exist.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: TextButton.styleFrom(
+                    primary: Constants.primaryColor,
+                  ),
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
-  }
+
     //Plants category
     List<String> _plantTypes = [
       'Recommended',
@@ -327,8 +334,8 @@ void _performLogout(BuildContext context) {
                 style: TextStyle(fontSize: size.width < 600 ? 16 : 18),
               ),
               onTap: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => SettingsScreen()));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => SettingsScreen(user: currentUser)));
               },
             ),
             Divider(
@@ -336,19 +343,19 @@ void _performLogout(BuildContext context) {
               thickness: 0.6,
             ),
             ListTile(
-  leading: Icon(
-    Icons.logout_outlined,
-    color: Constants.primaryColor,
-    size: size.width < 600 ? 24 : 30,
-  ),
-  title: Text(
-    'Logout',
-    style: TextStyle(fontSize: size.width < 600 ? 16 : 18),
-  ),
-  onTap: () {
-    _showLogoutDialog(context); // Show the logout dialog
-  },
-),
+              leading: Icon(
+                Icons.logout_outlined,
+                color: Constants.primaryColor,
+                size: size.width < 600 ? 24 : 30,
+              ),
+              title: Text(
+                'Logout',
+                style: TextStyle(fontSize: size.width < 600 ? 16 : 18),
+              ),
+              onTap: () {
+                _showLogoutDialog(context); // Show the logout dialog
+              },
+            ),
           ],
         ),
       ),
@@ -371,7 +378,7 @@ void _performLogout(BuildContext context) {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                         Expanded(
+                        Expanded(
                           child: TextField(
                             showCursor: true,
                             decoration: InputDecoration(
@@ -379,9 +386,9 @@ void _performLogout(BuildContext context) {
                               border: InputBorder.none,
                               focusedBorder: InputBorder.none,
                             ),
-                           onSubmitted: (value) {
-                            searchForPlant(value);
-                          }, 
+                            onSubmitted: (value) {
+                              searchForPlant(value);
+                            },
                           ),
                         ),
                         Icon(

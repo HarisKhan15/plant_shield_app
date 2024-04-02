@@ -1,17 +1,75 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
 
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
+import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/profile/Editprofile_page.dart';
+import 'package:plant_shield_app/models/edit-profile.dart';
+import 'package:plant_shield_app/models/user.dart';
+import 'package:plant_shield_app/services/profile-service.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  final User? user;
+  const SettingsScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  String? currentUser;
+  ProfileService profileService = ProfileService();
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      currentUser = widget.user?.username;
+    });
+  }
+
+  void callEditProfile() async {
+    EditProfile? profile;
+    try {
+      LoadingDialog.showLoadingDialog(context);
+      final EditProfile? response =
+          await profileService.getProfileByUserName(currentUser!);
+      if (response != null) {
+        profile = response;
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      Navigator.of(context).pop();
+    }
+    if (profile != null) {
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 500),
+          pageBuilder: (_, __, ___) => EditProfileScreen(
+            profile: profile!,
+          ),
+          transitionsBuilder: (_, animation, __, child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            );
+          },
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,22 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'Edit Profile',
             'assets/user.png',
             () {
-              Navigator.push(
-                context,
-                PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 500),
-                  pageBuilder: (_, __, ___) => EditProfileScreen(),
-                  transitionsBuilder: (_, animation, __, child) {
-                    return SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(1, 0),
-                        end: Offset.zero,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                ),
-              );
+              callEditProfile();
             },
           ),
           Divider(),

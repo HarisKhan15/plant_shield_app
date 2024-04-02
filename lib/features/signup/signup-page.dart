@@ -1,17 +1,14 @@
-// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously, implementation_imports
 
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:http/src/response.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
-import 'package:plant_shield_app/features/login/login_page.dart';
 import 'package:plant_shield_app/features/welcome/welcome-page.dart';
 import 'package:plant_shield_app/models/user-registration.dart';
 import 'package:plant_shield_app/services/user-service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -32,16 +29,10 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isObscureConfirmPassword = true;
   bool _hasText = false;
   bool _hasConfirmText = false;
-  late SharedPreferences loginUser;
 
   @override
   void initState() {
     super.initState();
-    initializeSharedPreferences();
-  }
-
-  void initializeSharedPreferences() async {
-    loginUser = await SharedPreferences.getInstance();
   }
 
   UserRegistration _constructRegistrationObject() {
@@ -72,8 +63,7 @@ class _SignupScreenState extends State<SignupScreen> {
         //   context,
         //   MaterialPageRoute(builder: (context) => OtpScreen()),
         // );
-        loginUser.setBool('login', false);
-        loginUser.setString('username', _usernameController.text);
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -119,7 +109,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 child: Stack(children: [
                   //logo
                   Positioned(
-                  left: MediaQuery.of(context).size.width * 0.5 - 150, 
+                    left: MediaQuery.of(context).size.width * 0.5 - 150,
                     child: Container(
                       alignment: Alignment.center,
                       child: Image.asset(
@@ -249,12 +239,12 @@ class _SignupScreenState extends State<SignupScreen> {
                                     ],
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Constants.primaryColor,
-                                    width: 2.0,
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: Constants.primaryColor,
+                                      width: 2.0,
+                                    ),
                                   ),
-                                ),
                                   filled: true,
                                 ),
                               ),
@@ -329,12 +319,12 @@ class _SignupScreenState extends State<SignupScreen> {
                                     ],
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Constants.primaryColor,
-                                    width: 2.0,
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      color: Constants.primaryColor,
+                                      width: 2.0,
+                                    ),
                                   ),
-                                ),
                                   filled: true,
                                 ),
                               ),
@@ -445,11 +435,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => LoginScreen()),
-                                    );
+                                    Navigator.of(context).pop();
                                   },
                                   child: Text(
                                     'Sign in',
