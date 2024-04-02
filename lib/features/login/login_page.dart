@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, sort_child_properties_last, use_build_context_synchronously, depend_on_referenced_packages
+// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, sort_child_properties_last, use_build_context_synchronously, depend_on_referenced_packages, implementation_imports
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -8,6 +8,7 @@ import 'package:plant_shield_app/features/forgetPassword/forgetPassword_page.dar
 import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/signup/signup-page.dart';
+import 'package:plant_shield_app/models/user.dart';
 import 'package:plant_shield_app/services/user-service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,16 +36,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void initializeSharedPreferences() async {
     loginUser = await SharedPreferences.getInstance();
   }
-
-  // void check_if_already_login() async {
-  //   loginUser = await SharedPreferences.getInstance();
-  //   newuser = (loginUser.getBool('login') ?? true);
-  //   print(newuser);
-  //   if (newuser == false) {
-  //     Navigator.pushReplacement(
-  //         context, MaterialPageRoute(builder: (context) => HomeScreen()));
-  //   }
-  // }
 
   @override
   void dispose() {
@@ -74,7 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       if (response != null && response.statusCode == 200) {
         loginUser.setBool('login', false);
-        loginUser.setString('username', _usernameController.text);
+        await setUserObjIntoSharedPreferences(_usernameController.text);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -89,6 +80,13 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> setUserObjIntoSharedPreferences(String username) async {
+    final User? userObj = await _userService.getLoggedInUser(username);
+    if (userObj != null) {
+      loginUser.setString("userObj", jsonEncode(userObj.toJson()));
     }
   }
 
@@ -111,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Stack(children: [
                   //logo
                   Positioned(
-                    left: MediaQuery.of(context).size.width * 0.5 - 150, 
+                    left: MediaQuery.of(context).size.width * 0.5 - 150,
                     child: Container(
                       alignment: Alignment.center,
                       child: Image.asset(
@@ -224,7 +222,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           Row(
                             children: [
                               Padding(
-                                padding: EdgeInsets.only(left:size.width*0.6),
+                                padding:
+                                    EdgeInsets.only(left: size.width * 0.6),
                                 child: TextButton(
                                   onPressed: () {
                                     Navigator.push(

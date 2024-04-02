@@ -13,7 +13,8 @@ import 'package:plant_shield_app/services/profile-service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  final EditProfile profile;
+  const EditProfileScreen({Key? key, required this.profile}) : super(key: key);
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -51,32 +52,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   };
 
   SharedPreferences? logindata;
-  String? username;
+
   EditProfile? currentProfile;
   ProfileService profileService = ProfileService();
 
   void initializeVariables() async {
-    logindata = await SharedPreferences.getInstance();
-    final String? currentUsername = logindata?.getString('username');
-    if (currentUsername != null) {
-      final EditProfile? profile =
-          await profileService.getProfileByUserName(currentUsername);
       setState(() {
-        username = currentUsername;
-        currentProfile = profile;
+        currentProfile = widget.profile;
         _lastNameController.text = currentProfile?.lastName ?? '';
         _firstNameController.text = currentProfile?.firstName ?? '';
         _bioController.text = currentProfile?.bio ?? '';
         _phoneController.text = currentProfile?.phoneNumber ?? '';
-        // _selectedGender = currentProfile?.gender ?? '';
-        // _selectedCountry = currentProfile?.location.split(',').last.trim() ?? '';
-        //  _selectedCity = currentProfile?.location.split(',').first.trim() ?? '';
+        if (currentProfile?.gender != null && currentProfile?.gender != "") {
+          _selectedGender = currentProfile?.gender ?? '';
+        }
+        if (currentProfile?.location != null &&
+            currentProfile?.location != "") {
+          final locationParts = currentProfile?.location.split(',');
+          if (locationParts != null && locationParts.length == 2) {
+            _selectedCountry = locationParts[1].trim();
+            _selectedCity = locationParts[0].trim();
+          }
+        }
         imageFile = currentProfile?.profilePicture != null
             ? File.fromRawPath(Uint8List.fromList(
                 base64.decode(currentProfile!.profilePicture)))
             : null;
       });
-    }
   }
 
   EditProfile _constructUpdatedProfileObject() {
@@ -134,8 +136,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         LoadingDialog.showLoadingDialog(context);
         EditProfile updatedProfile = _constructUpdatedProfileObject();
 
-        response =
-            await _profileService.saveProfileData(imageFile, updatedProfile);
+        response = await _profileService.saveProfileData(null, updatedProfile);
 
         if (response != null && response.statusCode == 200) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -437,8 +438,7 @@ class CurvedContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     double containerWidth = size.width;
-    double containerHeight =
-        size.height * 0.2; 
+    double containerHeight = size.height * 0.2;
     return Container(
       width: containerWidth,
       height: containerHeight,

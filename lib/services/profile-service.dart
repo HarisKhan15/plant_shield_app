@@ -65,9 +65,12 @@ class ProfileService extends ChangeNotifier {
       'Content-Type': 'multipart/form-data',
     });
     request.fields.addAll(editProfile.toForm());
-    final response = await http.Response.fromStream(await request.send());
-    return response;
-     
+      if (imageFile != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+            'profile_picture', imageFile.path));
+      }
+      final response = await http.Response.fromStream(await request.send());
+      return response;
     } catch (e) {
       print('Edit profile error: $e');
       throw Exception('Failed to edit profile data. Please try again later.');

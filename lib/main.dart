@@ -18,13 +18,17 @@ void main() {
         '/login': (context) => LoginScreen(),
         '/signup': (context) => SignupScreen(),
         '/otp': (context) => OtpScreen(),
-        '/welcome': (context) => WelcomeScreen(username: '',),
+        '/welcome': (context) => WelcomeScreen(
+              username: '',
+            ),
         '/home': (context) => HomeScreen(),
       }));
 }
+
 class UrlConfig {
-static const String baseUrl = "http://10.0.2.2:5000";
-static const String baseUrlNgrok = "https://4563-43-246-221-140.ngrok-free.app";
+  static const String baseUrl = "http://10.0.2.2:5000";
+  static const String baseUrlNgrok =
+      "https://c661-111-88-196-14.ngrok-free.app";
 
   static Uri buildUri(String path) {
     return Uri.parse("$baseUrlNgrok/$path");
