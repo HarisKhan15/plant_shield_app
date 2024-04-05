@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:http/src/response.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
-import 'package:plant_shield_app/features/welcome/welcome-page.dart';
+import 'package:plant_shield_app/features/otp/otp-page.dart';
 import 'package:plant_shield_app/models/user-registration.dart';
-import 'package:plant_shield_app/services/user-service.dart';
+import 'package:plant_shield_app/services/otp-service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -18,7 +18,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  final UserService _userService = UserService();
+  final OTPService _otpService = OTPService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -43,10 +43,10 @@ class _SignupScreenState extends State<SignupScreen> {
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
       Response? response;
+      UserRegistration userRegistration = _constructRegistrationObject();
       try {
         LoadingDialog.showLoadingDialog(context);
-        UserRegistration userRegistration = _constructRegistrationObject();
-        response = await _userService.registerUser(userRegistration);
+        response = await _otpService.generateOTP(userRegistration.email);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -59,16 +59,11 @@ class _SignupScreenState extends State<SignupScreen> {
         Navigator.of(context).pop();
       }
       if (response != null && response.statusCode == 200) {
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => OtpScreen()),
-        // );
-
         Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  WelcomeScreen(username: _usernameController.text)),
+                  OtpScreen(userRegistration: userRegistration)),
         );
       } else {
         Map<String, dynamic> errorJson = jsonDecode(response!.body);
