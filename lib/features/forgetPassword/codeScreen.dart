@@ -1,62 +1,63 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, prefer_final_fields
 
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
-import 'package:plant_shield_app/features/welcome/welcome-page.dart';
+import 'package:plant_shield_app/features/forgetPassword/changePassword_page.dart';
+import 'package:plant_shield_app/features/login/login_page.dart';
 
-class OtpScreen extends StatefulWidget {
-  const OtpScreen({Key? key}) : super(key: key);
+class CodeScreen extends StatefulWidget {
+  const CodeScreen({super.key});
 
   @override
-  _OtpScreenState createState() => _OtpScreenState();
+  State<CodeScreen> createState() => _CodeScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
-  List<TextEditingController> _otpControllers =
+class _CodeScreenState extends State<CodeScreen> {
+  List<TextEditingController> _CodeControllers =
       List.generate(6, (index) => TextEditingController());
 
   @override
   void dispose() {
-    for (var controller in _otpControllers) {
+    for (var controller in _CodeControllers) {
       controller.dispose();
     }
     super.dispose();
   }
 
-  bool _isOtpEntered() {
+  bool _isCodeEntered() {
     List<String> otpValues =
-        List.generate(6, (index) => _otpControllers[index].text);
+        List.generate(6, (index) => _CodeControllers[index].text);
     return !otpValues.contains('');
   }
 
+  void _resendCode() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Code will be resent to your email.'),
+      ),
+    );
+    // implement the logic to resend the code to the email
+  }
+
   @override
- Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 4,
-          backgroundColor: Colors.transparent,
-          // expandedHeight: size.height * 0.07,
-          // pinned: true,
-          // backgroundColor: Colors.white,
-          elevation: 0,
-        ),
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-            child: Form(
-                child: Stack(
-                  children: [
-                  //logo
-                  Positioned(
-                  left: MediaQuery.of(context).size.width * 0.5 - 150, 
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: Image.asset(
-                        'assets/logo2.png',
-                        height: 300,
-                      ),
-                    ),
-                  ),
-             Container(
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+// Logo
+          Positioned(
+            left: MediaQuery.of(context).size.width * 0.5 - 150,
+            child: Container(
+              alignment: Alignment.center,
+              child: Image.asset(
+                'assets/logo2.png',
+                height: 300,
+              ),
+            ),
+          ),
+          SingleChildScrollView(
+            child: Container(
               padding: EdgeInsets.only(
                 top: MediaQuery.of(context).size.height * 0.4,
                 right: 35,
@@ -64,7 +65,7 @@ class _OtpScreenState extends State<OtpScreen> {
               ),
               child: Column(
                 children: [
-                  // Message
+// Message
                   Padding(
                     padding: EdgeInsets.only(left: 8.0),
                     child: RichText(
@@ -72,7 +73,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         children: [
                           TextSpan(
                             text:
-                                "Please enter the 6-digit code sent to your email ",
+                                "Please enter the verification code sent to your email ",
                             style: TextStyle(color: Colors.black, fontSize: 13),
                           ),
                           TextSpan(
@@ -81,7 +82,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                 color: Constants.primaryColor, fontSize: 13),
                           ),
                           TextSpan(
-                            text: " for verification.",
+                            text: " to reset your password.",
                             style: TextStyle(color: Colors.black, fontSize: 13),
                           ),
                         ],
@@ -91,7 +92,6 @@ class _OtpScreenState extends State<OtpScreen> {
 
                   SizedBox(height: 30),
 
-                  // OTP Input Fields
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(
@@ -101,11 +101,19 @@ class _OtpScreenState extends State<OtpScreen> {
                         width: 38,
                         height: 45,
                         child: TextField(
-                          controller: _otpControllers[index],
+                          controller: _CodeControllers[index],
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
-                            border: OutlineInputBorder(),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10)),
                             counterText: '',
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(
+                                color: Constants.primaryColor,
+                                width: 2.0,
+                              ),
+                            ),
                           ),
                           keyboardType: TextInputType.number,
                           maxLength: 1,
@@ -122,8 +130,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
 
                   SizedBox(height: 30),
-
-                  // Verify Button
+// Verify Button
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -137,23 +144,24 @@ class _OtpScreenState extends State<OtpScreen> {
                         child: IconButton(
                           color: Colors.white,
                           onPressed: () {
-                            if (_isOtpEntered()) {
-                              Navigator.push(
+                            if (_isCodeEntered()) {
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => WelcomeScreen(username: '',)),
+                                    builder: (context) =>
+                                        ChangePasswordScreen()),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content:
-                                      Text('Please enter the complete OTP.'),
+                                  content: Text(
+                                      'Please enter the complete verification code.'),
                                 ),
                               );
                             }
                           },
                           icon: Text(
-                            'Verify',
+                            'verify',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
@@ -167,7 +175,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
                   SizedBox(height: 10),
 
-                  // Didn’t receive any code
+// Didn’t receive any code
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -179,7 +187,9 @@ class _OtpScreenState extends State<OtpScreen> {
                         ),
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _resendCode();
+                        },
                         child: Text(
                           'Resend',
                           style: TextStyle(
@@ -194,8 +204,9 @@ class _OtpScreenState extends State<OtpScreen> {
                   ),
                 ],
               ),
-            )],
-          ),),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, use_build_context_synchronously, implementation_imports
 
 import 'package:flutter/material.dart';
 import 'package:http/src/response.dart';
@@ -7,9 +7,12 @@ import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/models/profile.dart';
+import 'package:plant_shield_app/models/user.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:plant_shield_app/services/profile-service.dart';
+import 'package:plant_shield_app/services/user-service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WelcomeScreen extends StatefulWidget {
   final String username;
@@ -25,8 +28,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   File? imageFile;
+  late SharedPreferences loginUser;
+  final UserService _userService = UserService();
+
+  @override
+  void initState() {
+    super.initState();
+    initializeSharedPreferences();
+  }
+
+  void initializeSharedPreferences() async {
+    loginUser = await SharedPreferences.getInstance();
+  }
 
   Future<void> _Next() async {
     if (_formKey.currentState!.validate()) {
@@ -48,6 +62,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         Navigator.of(context).pop();
       }
       if (response != null && response.statusCode == 200) {
+        loginUser.setBool('login', false);
+        await setUserObjIntoSharedPreferences(widget.username);
         Navigator.of(context).pop();
         Navigator.of(context).pop();
         Navigator.pushReplacement(
@@ -65,6 +81,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> setUserObjIntoSharedPreferences(String username) async {
+    final User? userObj = await _userService.getLoggedInUser(username);
+    if (userObj != null) {
+      loginUser.setString("userObj", jsonEncode(userObj.toJson()));
     }
   }
 

@@ -14,11 +14,11 @@ class User {
 
   Map<String, dynamic> toJson() {
     return {
-      'firstName': firstName,
-      'lastName': lastName,
+      'first_name': firstName,
+      'last_name': lastName,
       'email': email,
       'username': username,
-      'profilePicture': profilePicture
+      'profile_picture': profilePicture
     };
   }
 
