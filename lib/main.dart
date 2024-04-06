@@ -17,7 +17,6 @@ void main() {
         '/splash': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
         '/signup': (context) => SignupScreen(),
-        '/otp': (context) => OtpScreen(),
         '/welcome': (context) => WelcomeScreen(
               username: '',
             ),
@@ -31,6 +30,6 @@ class UrlConfig {
       "https://c661-111-88-196-14.ngrok-free.app";
 
   static Uri buildUri(String path) {
-    return Uri.parse("$baseUrlNgrok/$path");
+    return Uri.parse("$baseUrl/$path");
   }
 }

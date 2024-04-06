@@ -66,6 +66,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         await setUserObjIntoSharedPreferences(widget.username);
         Navigator.of(context).pop();
         Navigator.of(context).pop();
+        Navigator.of(context).pop();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
