@@ -8,4 +8,7 @@ class UserRegistration {
   Map<String, dynamic> toForm() {
     return {'email': email, 'username': username, 'password': password};
   }
+  Map<String, String> toFormValidate() {
+    return {'email': email, 'username': username, 'password': password};
+  }
 }

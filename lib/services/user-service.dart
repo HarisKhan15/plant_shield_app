@@ -60,6 +60,21 @@ class UserService extends ChangeNotifier {
     }
   }
 
+  Future<http.Response?> validateUser(UserRegistration userRegistration) async {
+    try {
+      var request =
+          http.MultipartRequest('GET', UrlConfig.buildUri('validate-new-user'));
+
+      // Add additional form data
+      request.fields.addAll(userRegistration.toFormValidate());
+
+      final response = await http.Response.fromStream(await request.send());
+      return response;
+    } catch (e) {
+      e.toString();
+    }
+    return null;
+  }
   // Future<void> saveToken(String token) async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
   //   await prefs.setString('token', token);

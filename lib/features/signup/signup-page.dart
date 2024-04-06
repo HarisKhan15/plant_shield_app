@@ -9,6 +9,7 @@ import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/otp/otp-page.dart';
 import 'package:plant_shield_app/models/user-registration.dart';
 import 'package:plant_shield_app/services/otp-service.dart';
+import 'package:plant_shield_app/services/user-service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -18,6 +19,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  final UserService _userService = UserService();
   final OTPService _otpService = OTPService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
@@ -46,6 +48,10 @@ class _SignupScreenState extends State<SignupScreen> {
       UserRegistration userRegistration = _constructRegistrationObject();
       try {
         LoadingDialog.showLoadingDialog(context);
+        bool isUserValidate = await _validateUser(userRegistration);
+        if (!isUserValidate) {
+          return;
+        }
         response = await _otpService.generateOTP(userRegistration.email);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -76,6 +82,37 @@ class _SignupScreenState extends State<SignupScreen> {
         );
       }
     }
+  }
+
+  Future<bool> _validateUser(UserRegistration userRegistration) async {
+    Response? response;
+    try {
+      response = await _userService.validateUser(userRegistration);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+
+    if (response != null && response.statusCode == 200) {
+      return true;
+    } else {
+      Map<String, dynamic> errorJson = jsonDecode(response!.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorJson['error']),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
+    return false;
   }
 
   @override
