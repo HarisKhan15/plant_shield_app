@@ -219,7 +219,6 @@ class _OtpScreenState extends State<OtpScreen> {
                 ),
                 child: Column(
                   children: [
-                    
                     // Message
                     Padding(
                       padding: EdgeInsets.only(left: 8.0),
@@ -256,8 +255,8 @@ class _OtpScreenState extends State<OtpScreen> {
                         6,
                         (index) => Container(
                           margin: EdgeInsets.symmetric(horizontal: 3.0),
-                          width: 50,
-                          height: 55,
+                          width: 45,
+                          height: 50,
                           child: TextField(
                             controller: _otpControllers[index],
                             textAlign: TextAlign.center,
@@ -355,7 +354,7 @@ class _OtpScreenState extends State<OtpScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          _start > 0 ? 'Didn’t receive any code?' : '',
+                          _start > 0 ? '  Didn’t receive any code?' : '',
                           style: TextStyle(
                             fontSize: 12,
                             color: Color(0xfff4c505b),
