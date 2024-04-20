@@ -79,6 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         imageFile = File(pickedFile.path);
       });
+      // _showPlantNotFoundDialog(context);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -86,6 +87,32 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }
+  }
+
+  void _showPlantNotFoundDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Plant Not Found',
+            style: TextStyle(color: Constants.primaryColor),
+          ),
+          content: Text('Sorry! The plant does not exist.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              style: TextButton.styleFrom(
+                primary: Constants.primaryColor,
+              ),
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showLogoutDialog(BuildContext context) {
