@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/main.dart';
+import 'package:plant_shield_app/models/update-password.dart';
 import 'package:plant_shield_app/models/user-registration.dart';
 import 'package:plant_shield_app/models/user.dart';
 import 'package:http/http.dart' as http;
@@ -74,6 +75,37 @@ class UserService extends ChangeNotifier {
       e.toString();
     }
     return null;
+  }
+
+  Future<http.Response?> checkUserByUsername(String username) async {
+    try {
+      final response = await http.get(
+        UrlConfig.buildUri('/user/check-existence/$username'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      return response;
+    } catch (e) {
+      e.toString();
+    }
+    return null;
+  }
+
+  Future<http.Response> updatePassword(UpdatePassword updatePassword) async {
+    try {
+      var requestBody = updatePassword.toForm();
+
+      final response = await http.put(
+        UrlConfig.buildUri("/update/password"),
+        body: requestBody,
+      );
+      return response;
+    } catch (e) {
+      print('Login error: $e');
+      throw Exception('Failed to Sign in. Please try again later.');
+    }
   }
   // Future<void> saveToken(String token) async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
