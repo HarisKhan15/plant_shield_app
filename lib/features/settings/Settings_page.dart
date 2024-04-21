@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
+import 'package:plant_shield_app/features/changepassword/change-password-page.dart';
 import 'package:plant_shield_app/features/profile/Editprofile_page.dart';
 import 'package:plant_shield_app/models/edit-profile.dart';
 import 'package:plant_shield_app/models/user.dart';
@@ -104,7 +105,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             context,
             'Change Password',
             'assets/lock.png',
-            () {},
+            () {
+              Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => ChangePasswordScreen(fromSettings: true),
+  ),
+);
+            },
           ),
           Divider(),
           _buildSettingsItem(
