@@ -153,6 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Perform your logout logic here
     logindata?.setBool('login', true);
     logindata?.remove("userObj");
+    Navigator.of(context).pop();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -391,6 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Search bar
             Container(
               padding: const EdgeInsets.only(top: 5),
               child: Row(
@@ -435,6 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(
               height: 10,
             ),
+            // Category bar
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               height: size.width < 550 ? 55.0 : 100.0,
@@ -468,6 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
+            // Right scroll plant view according to category
             SizedBox(
               height: size.height * .3,
               child: ListView.builder(
@@ -559,6 +563,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
+            // New Plant Text
             Container(
               padding: const EdgeInsets.only(left: 16, bottom: 20, top: 20),
               child: const Text(
@@ -569,6 +574,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            // All Plants
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               height: size.height * .41,
