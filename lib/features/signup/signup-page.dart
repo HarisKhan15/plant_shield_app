@@ -69,7 +69,8 @@ class _SignupScreenState extends State<SignupScreen> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  OtpScreen(userRegistration: userRegistration)),
+                  OtpScreen(userRegistration: userRegistration,
+                  pageType: Constants.SIGN_UP,)),
         );
       } else {
         Map<String, dynamic> errorJson = jsonDecode(response!.body);
