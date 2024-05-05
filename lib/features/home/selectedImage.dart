@@ -35,7 +35,11 @@ class SelectedImageScreen extends StatefulWidget {
 class _SelectedImageScreenState extends State<SelectedImageScreen> {
   bool isButtonClicked = false;
   String? selectedButton;
-
+ @override
+  void initState() {
+    super.initState();
+    selectedButton = 'Details'; 
+  }
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
