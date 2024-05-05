@@ -1,13 +1,21 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
+import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/login/login_page.dart';
+import 'package:plant_shield_app/models/update-password.dart';
+import 'package:plant_shield_app/services/user-service.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   final bool fromSettings;
+  final String username;
 
-  const ChangePasswordScreen({Key? key, required this.fromSettings})
+  const ChangePasswordScreen(
+      {Key? key, required this.fromSettings, required this.username})
       : super(key: key);
 
   @override
@@ -27,27 +35,139 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _hasText = false;
   bool _hasConfirmText = false;
   bool _hasCurrentPasswordText = false;
+  final UserService _userService = UserService();
 
-  void _changePasswordValidation() {
+  void _changePasswordValidation() async {
     if (_formKey.currentState!.validate()) {
+      LoadingDialog.showLoadingDialog(context);
+
+      if (widget.fromSettings) {
+        bool isCurrentPasswordMatched = await validateCurrentPassword(
+            widget.username, _currentPasswordController.text);
+        if (!isCurrentPasswordMatched) {
+          Navigator.of(context).pop();
+          return;
+        }
+      }
+
       String password = _passwordController.text;
-      if (password.length < 8) {
+      if (!isValidPassword(password)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Password should be at least 8 characters long.',
+              'Invalid password. Please check the requirements.',
             ),
             duration: Duration(seconds: 2),
             backgroundColor: Colors.red,
           ),
         );
+        Navigator.of(context).pop();
         return;
       }
+
+      updatePassword();
+    }
+  }
+
+  void updatePassword() async {
+    Response? response;
+    UpdatePassword updatePasswordObj = _constructUpdatePasswordObject();
+    try {
+      response = await _userService.updatePassword(updatePasswordObj);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      Navigator.of(context).pop();
+    }
+
+    if (response != null && response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Password Updated successfully.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.green,
+        ),
+      );
       Navigator.pop(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
       );
+    } else {
+      Map<String, dynamic> errorJson = jsonDecode(response!.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorJson['error']),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
+  }
+
+  Future<bool> validateCurrentPassword(
+      String username, String currentPassword) async {
+    Response? response;
+    try {
+      response =
+          await _userService.validateCurrentPassword(username, currentPassword);
+    } catch (e) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
+    if (response == null || response.statusCode != 200) {
+      Map<String, dynamic> errorJson = jsonDecode(response!.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorJson['error']),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  UpdatePassword _constructUpdatePasswordObject() {
+    return UpdatePassword(widget.username, _passwordController.text);
+  }
+
+  bool isValidPassword(String password) {
+    if (password.length < 8) {
+      return false;
+    }
+
+    if (!password.contains(RegExp(r'[A-Z]'))) {
+      return false;
+    }
+
+    if (!password.contains(RegExp(r'[a-z]'))) {
+      return false;
+    }
+
+    if (!password.contains(RegExp(r'[0-9]'))) {
+      return false;
+    }
+
+    if (!password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+      return false;
+    }
+
+    return true;
   }
 
   Widget _currentPasswordField(BuildContext context) {

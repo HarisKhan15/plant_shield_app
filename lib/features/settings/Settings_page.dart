@@ -107,11 +107,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             'assets/lock.png',
             () {
               Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => ChangePasswordScreen(fromSettings: true),
-  ),
-);
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangePasswordScreen(
+                    fromSettings: true,
+                    username: currentUser!,
+                  ),
+                ),
+              );
             },
           ),
           Divider(),

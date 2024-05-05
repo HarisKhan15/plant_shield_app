@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,10 @@ class Constants {
   static var titleThree = "Plant a tree, green the Earth";
   static var descriptionThree =
       "Find almost all types of plants that you like here.";
+  static var SIGN_UP = "signUp";
+  static var FORGET_PASSWORD = "forgetPassword";
 }
+
 //text feild styling
 InputDecoration constantInputDecoration({
   required String hintText,
