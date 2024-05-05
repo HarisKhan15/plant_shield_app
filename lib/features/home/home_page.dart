@@ -10,6 +10,7 @@ import 'package:plant_shield_app/features/favorites/favoritePlants_page.dart';
 import 'package:plant_shield_app/features/home/homePlant_widget.dart';
 import 'package:plant_shield_app/features/home/selectedImage.dart';
 import 'package:plant_shield_app/features/home/infocard.dart';
+import 'package:plant_shield_app/features/home/user-plant-loader.dart';
 import 'package:plant_shield_app/features/login/login_page.dart';
 import 'package:plant_shield_app/features/myPlants/myPlants_page.dart';
 import 'package:plant_shield_app/features/plantDetail/detail_page.dart';
@@ -62,6 +63,16 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         imageFile = File(pickedFile.path);
       });
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return UserPlantLoader();
+        },
+      );
+      await Future.delayed(Duration(seconds: 7));
+
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -79,7 +90,18 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         imageFile = File(pickedFile.path);
       });
-      // _showPlantNotFoundDialog(context);
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return UserPlantLoader();
+        },
+      );
+      await Future.delayed(Duration(seconds: 5));
+
+      Navigator.pop(context);
+
       Navigator.push(
         context,
         MaterialPageRoute(
