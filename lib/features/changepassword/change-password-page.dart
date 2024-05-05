@@ -40,6 +40,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   void _changePasswordValidation() async {
     if (_formKey.currentState!.validate()) {
       LoadingDialog.showLoadingDialog(context);
+
+      if (widget.fromSettings) {
+        bool isCurrentPasswordMatched = await validateCurrentPassword(
+            widget.username, _currentPasswordController.text);
+        if (!isCurrentPasswordMatched) {
+          Navigator.of(context).pop();
+          return;
+        }
+      }
+
       String password = _passwordController.text;
       if (!isValidPassword(password)) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -55,39 +65,81 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         return;
       }
 
-      Response? response;
-      UpdatePassword updatePasswordObj = _constructUpdatePasswordObject();
-
-      try {
-        response = await _userService.updatePassword(updatePasswordObj);
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Network error. Please try again.'),
-            duration: Duration(seconds: 2),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } finally {
-        Navigator.of(context).pop();
-      }
-
-      if (response != null && response.statusCode == 200) {
-        Navigator.pop(
-          context,
-          MaterialPageRoute(builder: (context) => LoginScreen()),
-        );
-      } else {
-        Map<String, dynamic> errorJson = jsonDecode(response!.body);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorJson['error']),
-            duration: Duration(seconds: 2),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      updatePassword();
     }
+  }
+
+  void updatePassword() async {
+    Response? response;
+    UpdatePassword updatePasswordObj = _constructUpdatePasswordObject();
+    try {
+      response = await _userService.updatePassword(updatePasswordObj);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      Navigator.of(context).pop();
+    }
+
+    if (response != null && response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Password Updated successfully.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pop(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    } else {
+      Map<String, dynamic> errorJson = jsonDecode(response!.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorJson['error']),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<bool> validateCurrentPassword(
+      String username, String currentPassword) async {
+    Response? response;
+    try {
+      response =
+          await _userService.validateCurrentPassword(username, currentPassword);
+    } catch (e) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+
+    if (response == null || response.statusCode != 200) {
+      Map<String, dynamic> errorJson = jsonDecode(response!.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorJson['error']),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
+    }
+
+    return true;
   }
 
   UpdatePassword _constructUpdatePasswordObject() {

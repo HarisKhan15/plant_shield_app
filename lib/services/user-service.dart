@@ -107,13 +107,23 @@ class UserService extends ChangeNotifier {
       throw Exception('Failed to Sign in. Please try again later.');
     }
   }
-  // Future<void> saveToken(String token) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString('token', token);
-  // }
 
-  // Future<String?> getToken() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   return prefs.getString('token');
-  // }
+  Future<http.Response?> validateCurrentPassword(
+      String username, String currentPassword) async {
+    try {
+      var request = http.MultipartRequest(
+          'GET', UrlConfig.buildUri('user/validate-current-password'));
+
+      request.fields.addAll({
+        'username': username,
+        'curr_password': currentPassword,
+      });
+
+      final response = await http.Response.fromStream(await request.send());
+      return response;
+    } catch (e) {
+      e.toString();
+    }
+    return null;
+  }
 }
