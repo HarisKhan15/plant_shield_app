@@ -1,7 +1,13 @@
-// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, sized_box_for_whitespace
+// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, sized_box_for_whitespace, use_build_context_synchronously
 
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:plant_shield_app/features/Components/loader.dart';
+import 'package:plant_shield_app/models/create-user-plant.dart';
+import 'package:plant_shield_app/models/plant-detection.dart';
+import 'package:plant_shield_app/services/user-plant-service.dart';
 import 'package:tuple/tuple.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
 
@@ -24,9 +30,15 @@ class CurvedClipper extends CustomClipper<Path> {
 }
 
 class SelectedImageScreen extends StatefulWidget {
+  final PlantDetection detectedPlantDetails;
+  final String username;
   final File imageFile;
 
-  const SelectedImageScreen({Key? key, required this.imageFile})
+  const SelectedImageScreen(
+      {Key? key,
+      required this.username,
+      required this.detectedPlantDetails,
+      required this.imageFile})
       : super(key: key);
 
   @override
@@ -36,11 +48,67 @@ class SelectedImageScreen extends StatefulWidget {
 class _SelectedImageScreenState extends State<SelectedImageScreen> {
   bool isButtonClicked = false;
   String? selectedButton;
+  PlantDetection? plantDetection;
+  String? username;
+  File? imageFile;
+  UserPlantService _userPlantService = UserPlantService();
 
   @override
   void initState() {
     super.initState();
     selectedButton = 'Details';
+    setState(() {
+      plantDetection = widget.detectedPlantDetails;
+      username = widget.username;
+      imageFile = widget.imageFile;
+    });
+  }
+
+  CreateUserPlant _constructUserPlantObject() {
+    return CreateUserPlant(
+        username: username!,
+        plantId: plantDetection!.plantId,
+        currentDisease: plantDetection!.diseaseName);
+  }
+
+  void addIntoUserPlant() async {
+    Response? response;
+    try {
+      LoadingDialog.showLoadingDialog(context);
+      CreateUserPlant userPlant = _constructUserPlantObject();
+
+      response = await _userPlantService.addDetectedPlantIntoUserPlant(
+          imageFile!, userPlant);
+
+      if (response != null && response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Plant added successfully into my plants.'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        Map<String, dynamic> errorJson = jsonDecode(response!.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorJson['error']),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -69,7 +137,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                           fit: StackFit.expand,
                           children: [
                             Image.file(
-                              widget.imageFile,
+                              imageFile!,
                               fit: BoxFit.cover,
                             ),
                             Align(
@@ -108,7 +176,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                             children: [
                               SizedBox(height: 7),
                               Text(
-                                'Night Blooming Jasmine',
+                                plantDetection!.plantName,
                                 style: TextStyle(
                                   color: Constants.primaryColor,
                                   fontSize: 25,
@@ -126,7 +194,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                               Padding(
                                 padding: const EdgeInsets.only(left: 2),
                                 child: Text(
-                                  'Outdoor',
+                                  plantDetection!.species,
                                   style: TextStyle(
                                     fontSize: 17,
                                     fontFamily: 'Mulish-VariableFont_wght',
@@ -149,6 +217,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                                 : () {
                                     setState(() {
                                       isButtonClicked = true;
+                                      addIntoUserPlant();
                                     });
                                   },
                             style: ElevatedButton.styleFrom(
@@ -228,7 +297,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                           imageSize: 35,
                           header: 'Description',
                           simpleContent: [
-                            'Night-blooming jasmine is a woody shrub or small tree that can grow up to 15 feet tall. It has dark green, lance-shaped leaves arranged alternately along the stems. The flowers are small, white, and tubular, with five petals fused into a narrow tube. They bloom at night and release a sweet, intoxicating fragrance that attracts nocturnal pollinators such as moths and bats.',
+                            plantDetection!.description,
                           ],
                           expanded: selectedButton == 'Details',
                         ),
@@ -237,7 +306,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                           imageSize: 40,
                           header: 'Species',
                           simpleContent: [
-                            'Night-blooming jasmine has a lifespan of approximately 36 months under ideal growing conditions. With proper care and maintenance, it can live longer and continue to provide beauty and fragrance to your garden.',
+                            plantDetection!.speciesDetail,
                           ],
                           expanded: selectedButton == 'Details',
                         ),
@@ -245,12 +314,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                           iconAssetPath: 'assets/life.png',
                           imageSize: 40,
                           header: 'Max Life',
-                          tupleContent: [
-                            Tuple2('Max Life', '36 Months'),
-                          ],
-                          simpleContent: [
-                            'Night-blooming jasmine has a lifespan of approximately 36 months under ideal growing conditions. With proper care and maintenance, it can live longer and continue to provide beauty and fragrance to your garden.'
-                          ],
+                          simpleContent: [plantDetection!.maxLife],
                           expanded: selectedButton == 'Details',
                         ),
                         _buildExpandableSection(
@@ -258,11 +322,9 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                           imageSize: 40,
                           header: 'Diseases',
                           tupleContent: [
-                            Tuple2('Disease Name', 'Powdery Mildew, Root Rot'),
+                            Tuple2('Disease Name', plantDetection!.diseaseName),
                           ],
-                          simpleContent: [
-                            'Night-blooming jasmine is relatively resistant to pests and diseases but may occasionally encounter issues such as powdery mildew and root rot. Powdery mildew can be prevented by ensuring good air circulation and avoiding overhead watering. Root rot can be prevented by avoiding overwatering and ensuring well-draining soil.'
-                          ],
+                          simpleContent: [plantDetection!.diseaseDescription],
                           expanded: selectedButton == 'Health',
                         ),
                         _buildExpandableSection(
@@ -270,31 +332,20 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                           imageSize: 40,
                           header: 'Prevention',
                           simpleContent: [
-                            'To prevent powdery mildew, ensure good air circulation around the plant by spacing them adequately. Water at the base to prevent moisture accumulation on the leaves, especially in the evening. Apply fungicidal sprays as a preventive measure during periods of high humidity. To prevent root rot, water plants only when necessary and ensure proper drainage in the soil.',
+                            plantDetection!.diseasePossibleSteps,
                           ],
                           expanded: selectedButton == 'Health',
                         ),
                         _buildExpandableSection(
-                          iconAssetPath: 'assets/humidity.png',
+                          iconAssetPath: 'assets/water.png',
                           imageSize: 40,
-                          header: 'Humidity',
+                          header: 'Watering Schedule',
                           tupleContent: [
-                            Tuple2('Preferred Level', '70%'),
+                            Tuple2('Frequency',
+                                '${plantDetection!.wateringSchedule} hours'),
                           ],
                           simpleContent: [
-                            'Night-blooming jasmine thrives in moderate to high humidity levels. It prefers humidity levels between 60% and 80%. To maintain optimal humidity, you can mist the plant regularly or place a humidifier nearby.'
-                          ],
-                          expanded: selectedButton == 'Care Instructions',
-                        ),
-                        _buildExpandableSection(
-                          iconAssetPath: 'assets/temp.png',
-                          imageSize: 40,
-                          header: 'Temperature',
-                          tupleContent: [
-                            Tuple2('Optimal', '20°C - 25°C'),
-                          ],
-                          simpleContent: [
-                            'Night-blooming jasmine prefers warm temperatures between 20°C and 25°C. It is sensitive to cold temperatures and should be protected from frost. If grown outdoors, it should be planted in a sheltered location.'
+                            plantDetection!.wateringScheduleDetail
                           ],
                           expanded: selectedButton == 'Care Instructions',
                         ),
@@ -303,23 +354,35 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                           imageSize: 40,
                           header: 'Sunlight Requirement',
                           tupleContent: [
-                            Tuple2('Direct Sunlight', '6-8 hours/day'),
+                            Tuple2('Direct Sunlight',
+                                plantDetection!.sunlightRequirements),
                           ],
                           simpleContent: [
-                            'Night-blooming jasmine requires full sunlight to thrive. It should be planted in a location where it receives at least 6 to 8 hours of direct sunlight per day. Insufficient sunlight can result in poor growth and fewer blooms.'
+                            plantDetection!.sunlightRequirementsDetail
                           ],
                           expanded: selectedButton == 'Care Instructions',
                         ),
                         _buildExpandableSection(
-                          iconAssetPath: 'assets/water.png',
+                          iconAssetPath: 'assets/temp.png',
                           imageSize: 40,
-                          header: 'Watering Schedule',
+                          header: 'Temperature',
                           tupleContent: [
-                            Tuple2('Frequency', 'Every 12 hours'),
+                            Tuple2('Optimal',
+                                plantDetection!.temperatureRequirements),
                           ],
                           simpleContent: [
-                            'Night-blooming jasmine prefers evenly moist soil. Water deeply once a week, allowing the soil to dry slightly between waterings. Avoid overwatering, as it can lead to root rot.'
+                            plantDetection!.temperatureRequirementsDetail
                           ],
+                          expanded: selectedButton == 'Care Instructions',
+                        ),
+                        _buildExpandableSection(
+                          iconAssetPath: 'assets/humidity.png',
+                          imageSize: 40,
+                          header: 'Humidity',
+                          tupleContent: [
+                            Tuple2('Preferred Level', plantDetection!.humidity),
+                          ],
+                          simpleContent: [plantDetection!.humidityDetail],
                           expanded: selectedButton == 'Care Instructions',
                         ),
                       ],
