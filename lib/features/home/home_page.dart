@@ -17,7 +17,9 @@ import 'package:plant_shield_app/features/plantDetail/detail_page.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:plant_shield_app/features/settings/Settings_page.dart';
+import 'package:plant_shield_app/models/plant-detection.dart';
 import 'package:plant_shield_app/models/user.dart';
+import 'package:plant_shield_app/services/user-plant-service.dart';
 import 'package:plant_shield_app/services/user-service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String? username;
   User? currentUser;
   UserService userService = UserService();
+  UserPlantService userPlantService = UserPlantService();
+  PlantDetection? plantDetection;
 
   @override
   void initState() {
@@ -55,42 +59,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _getImageFromGallery() async {
+  Future<void> _getImageToIdentifyPlantAndPredictPlantDisease(
+      bool isCamera) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        imageFile = File(pickedFile.path);
-      });
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return UserPlantLoader();
-        },
-      );
-      await Future.delayed(Duration(seconds: 7));
-
-      Navigator.pop(context);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SelectedImageScreen(imageFile: imageFile!),
-        ),
-      );
+    final PickedFile? pickedFile;
+    if (isCamera) {
+      pickedFile = await picker.getImage(source: ImageSource.camera);
+    } else {
+      pickedFile = await picker.getImage(source: ImageSource.gallery);
     }
-  }
-
-  Future<void> _getImageFromCamera() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
 
     if (pickedFile != null) {
       setState(() {
-        imageFile = File(pickedFile.path);
+        imageFile = File(pickedFile!.path);
       });
-
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -98,16 +80,29 @@ class _HomeScreenState extends State<HomeScreen> {
           return UserPlantLoader();
         },
       );
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(Duration(seconds: 7), () async {
+        try {
+          plantDetection = await userPlantService
+              .detectPlantInformationAndDisease(imageFile);
+        } catch (e) {
+          print(e);
+        }
+      });
 
       Navigator.pop(context);
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => SelectedImageScreen(imageFile: imageFile!),
-        ),
-      );
+      if (plantDetection != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SelectedImageScreen(
+                username: username!,
+                detectedPlantDetails: plantDetection!,
+                imageFile: imageFile!),
+          ),
+        );
+      } else {
+        _showPlantNotFoundDialog(context);
+      }
     }
   }
 
@@ -175,6 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Perform your logout logic here
     logindata?.setBool('login', true);
     logindata?.remove("userObj");
+    Navigator.of(context).pop();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -413,6 +409,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Search bar
             Container(
               padding: const EdgeInsets.only(top: 5),
               child: Row(
@@ -457,6 +454,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(
               height: 10,
             ),
+            // Category bar
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               height: size.width < 550 ? 55.0 : 100.0,
@@ -490,6 +488,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
+            // Right scroll plant view according to category
             SizedBox(
               height: size.height * .3,
               child: ListView.builder(
@@ -581,6 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
+            // New Plant Text
             Container(
               padding: const EdgeInsets.only(left: 16, bottom: 20, top: 20),
               child: const Text(
@@ -591,6 +591,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            // All Plants
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               height: size.height * .41,
@@ -636,12 +637,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           visible: _isExpanded,
                           child: FloatingActionButton(
                             onPressed: () {
-                              _getImageFromCamera();
+                              _getImageToIdentifyPlantAndPredictPlantDisease(
+                                  true);
                             },
                             backgroundColor: Constants.primaryColor,
                             tooltip: 'Button 1',
                             heroTag: null,
-                            child: Icon(Icons.camera_alt),
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: Color.fromARGB(255, 209, 230, 195),
+                            ),
                           ),
                         ),
                         SizedBox(height: 16.0),
@@ -649,12 +654,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           visible: _isExpanded,
                           child: FloatingActionButton(
                             onPressed: () {
-                              _getImageFromGallery();
+                              _getImageToIdentifyPlantAndPredictPlantDisease(
+                                  false);
                             },
                             backgroundColor: Constants.primaryColor,
                             tooltip: 'Button 2',
                             heroTag: null,
-                            child: Icon(Icons.photo),
+                            child: Icon(
+                              Icons.photo_library,
+                              color: Color.fromARGB(255, 209, 230, 195),
+                            ),
                           ),
                         ),
                         SizedBox(height: 16.0),
@@ -672,7 +681,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 30.0), // Adjust the radius as needed
                           ),
                           child: _isExpanded
-                              ? Icon(Icons.close)
+                              ? Icon(
+                                  Icons.close,
+                                  color: Color.fromARGB(255, 209, 230, 195),
+                                )
                               : Container(
                                   width: 30,
                                   height: 30,

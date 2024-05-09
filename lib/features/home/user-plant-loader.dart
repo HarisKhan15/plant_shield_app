@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, deprecated_member_use
 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -21,7 +21,7 @@ class _UserPlantLoaderState extends State<UserPlantLoader> {
         _displayText = 'Detecting your plant..';
       });
 
-      Future.delayed(Duration(seconds: 3), () {
+      Future.delayed(Duration(seconds: 2), () {
         setState(() {
           _displayText = 'Analysis successful!';
         });
@@ -31,26 +31,30 @@ class _UserPlantLoaderState extends State<UserPlantLoader> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 200,
-              height: 200,
-              child: Lottie.network(
-                'https://lottie.host/fe8da8b0-4672-477e-a873-ce11fdf87cd5/h9rU4CzL15.json',
-              ),
+    return WillPopScope(
+        onWillPop: () {
+          return Future(() => false);
+        },
+        child: Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: Lottie.network(
+                    'https://lottie.host/fe8da8b0-4672-477e-a873-ce11fdf87cd5/h9rU4CzL15.json',
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  _displayText,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
-            SizedBox(height: 20),
-            Text(
-              _displayText,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 }
