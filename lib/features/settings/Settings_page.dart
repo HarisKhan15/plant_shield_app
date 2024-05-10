@@ -72,9 +72,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+      Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
       appBar: AppBar(
+          leading: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+          child: Container(
+            height: 30,
+            width: 30,
+            child: Icon(
+              Icons.arrow_back_rounded,
+              color: Colors.white,
+              size: size.width < 600 ? 24 : 30, 
+            ),
+          ),
+        ),
         backgroundColor: Constants.primaryColor,
         title: Text(
           'Settings',
@@ -82,10 +97,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
+            
           ),
         ),
         centerTitle: true,
         elevation: 0,
+         automaticallyImplyLeading: false,
       ),
       body: ListView(
         children: [

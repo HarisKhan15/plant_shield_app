@@ -113,6 +113,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 4,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
         backgroundColor: Colors.white,
         body: Form(
             key: _formKey,
@@ -120,7 +125,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               SingleChildScrollView(
                   child: Container(
                       padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height * 0.2,
+                          top: MediaQuery.of(context).size.height * 0.15,
                           right: 10,
                           left: 10),
                       child: Center(
@@ -172,21 +177,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   }
                                   return null;
                                 },
-                                decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 12),
-                                  fillColor: Colors.grey.shade100,
+                                 decoration: constantInputDecoration(
                                   hintText: 'First Name',
-                                  hintStyle: TextStyle(fontSize: 12),
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  suffixIcon: SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: Image.asset('assets/user.png'),
-                                  ),
-                                  filled: true,
-                                ),
+                                  suffixImagePath: 'assets/user.png'),
+                            
                               ),
                             ),
                             SizedBox(height: 20.0),
@@ -202,21 +196,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   }
                                   return null;
                                 },
-                                decoration: InputDecoration(
-                                  contentPadding: EdgeInsets.symmetric(
-                                      vertical: 12, horizontal: 12),
-                                  fillColor: Colors.grey.shade100,
-                                  hintText: 'last Name',
-                                  hintStyle: TextStyle(fontSize: 12),
-                                  border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10)),
-                                  suffixIcon: SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: Image.asset('assets/user.png'),
-                                  ),
-                                  filled: true,
-                                ),
+                                decoration: constantInputDecoration(
+                                  hintText: 'Last Name',
+                                  suffixImagePath: 'assets/user.png'),
+                            
                               ),
                             ),
                             SizedBox(height: 30.0),

@@ -44,24 +44,45 @@ class _SplashScreenState extends State<SplashScreen> {
         body: Container(
       child: Center(
         child: Stack(children: [
-          //logo
-          Positioned(
-              child: Image.asset(
-                'assets/splashlogo.png',
-                height: MediaQuery.of(context).size.height * 0.45,
-              ),
-              top: MediaQuery.of(context).size.height * 0.45,
-              left: 0,
-              right: 0),
           //leaf
           Positioned(
-              child: Image.asset(
-                'assets/leaf.png',
-                height: MediaQuery.of(context).size.height * 0.86,
-              ),
-              top: 0,
-              right: -10,
-              left: 0),
+            child: Image.asset('assets/leaf1.png'),
+            right: -410,
+            bottom: 98,
+          ),
+
+          //logo
+          Positioned(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/finallogo.png',
+                  height: MediaQuery.of(context).size.height * 0.2,
+                ),
+                SizedBox(height: 15),
+                Text(
+                  'PLANT SHIELD',
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width < 600 ? 24 : 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4C7031),
+                  ),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  'Plant Disease Detection and Prediction',
+                  style: TextStyle(
+                    fontSize: MediaQuery.of(context).size.width < 600 ? 16 : 10,
+                    color: Color(0xFF4C7031),
+                  ),
+                ),
+              ],
+            ),
+            top: MediaQuery.of(context).size.height * 0.58,
+            left: 0,
+            right: 0,
+          ),
         ]),
       ),
     ));

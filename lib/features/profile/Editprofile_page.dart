@@ -57,28 +57,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   ProfileService profileService = ProfileService();
 
   void initializeVariables() async {
-      setState(() {
-        currentProfile = widget.profile;
-        _lastNameController.text = currentProfile?.lastName ?? '';
-        _firstNameController.text = currentProfile?.firstName ?? '';
-        _bioController.text = currentProfile?.bio ?? '';
-        _phoneController.text = currentProfile?.phoneNumber ?? '';
-        if (currentProfile?.gender != null && currentProfile?.gender != "") {
-          _selectedGender = currentProfile?.gender ?? '';
+    setState(() {
+      currentProfile = widget.profile;
+      _lastNameController.text = currentProfile?.lastName ?? '';
+      _firstNameController.text = currentProfile?.firstName ?? '';
+      _bioController.text = currentProfile?.bio ?? '';
+      _phoneController.text = currentProfile?.phoneNumber ?? '';
+      if (currentProfile?.gender != null && currentProfile?.gender != "") {
+        _selectedGender = currentProfile?.gender ?? '';
+      }
+      if (currentProfile?.location != null && currentProfile?.location != "") {
+        final locationParts = currentProfile?.location.split(',');
+        if (locationParts != null && locationParts.length == 2) {
+          _selectedCountry = locationParts[1].trim();
+          _selectedCity = locationParts[0].trim();
         }
-        if (currentProfile?.location != null &&
-            currentProfile?.location != "") {
-          final locationParts = currentProfile?.location.split(',');
-          if (locationParts != null && locationParts.length == 2) {
-            _selectedCountry = locationParts[1].trim();
-            _selectedCity = locationParts[0].trim();
-          }
-        }
-        imageFile = currentProfile?.profilePicture != null
-            ? File.fromRawPath(Uint8List.fromList(
-                base64.decode(currentProfile!.profilePicture)))
-            : null;
-      });
+      }
+      imageFile = currentProfile?.profilePicture != null
+          ? File.fromRawPath(
+              Uint8List.fromList(base64.decode(currentProfile!.profilePicture)))
+          : null;
+    });
   }
 
   EditProfile _constructUpdatedProfileObject() {
@@ -182,30 +181,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         body: Form(
           key: _formKey,
           child: CustomScrollView(
-            //controller: _scrollController,
             slivers: <Widget>[
               SliverAppBar(
                 backgroundColor: Constants.primaryColor,
-                expandedHeight: MediaQuery.of(context).size.height * 0.07,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  title: Padding(
-                    padding: EdgeInsets.only(
-                      top: 45.0,
-                    ),
-                    child: Text(
-                      'Edit Profile',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: size.width < 600 ? 16 : 20,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 3,
-                          )
-                        ],
-                      ),
+                expandedHeight: MediaQuery.of(context).size.height * 0.05,
+                pinned: false,
+                automaticallyImplyLeading: false,
+                leading: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    height: 30,
+                    width: 30,
+                    child: Icon(
+                      Icons.arrow_back_rounded,
+                      color: Colors.white,
+                      size: size.width < 600 ? 24 : 30,
                     ),
                   ),
                 ),
@@ -215,7 +207,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     CurvedContainer(),
                     Positioned(
-                      top: size.height * 0.05,
+                      top: size.height * 0.06,
                       left: 0,
                       right: 0,
                       child: Center(
@@ -250,7 +242,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     SingleChildScrollView(
                       child: Container(
                         padding: EdgeInsets.only(
-                          top: MediaQuery.of(context).size.height * 0.28,
+                          top: MediaQuery.of(context).size.height * 0.29,
                           right: 10,
                           left: 10,
                         ),
@@ -442,11 +434,15 @@ class CurvedContainer extends StatelessWidget {
     return Container(
       width: containerWidth,
       height: containerHeight,
-      child: ClipPath(
-        clipper: CurvedClipper(),
-        child: Container(
-          color: Constants.primaryColor,
-        ),
+      child: Stack(
+        children: [
+          ClipPath(
+            clipper: CurvedClipper(),
+            child: Container(
+              color: Constants.primaryColor,
+            ),
+          ),
+        ],
       ),
     );
   }

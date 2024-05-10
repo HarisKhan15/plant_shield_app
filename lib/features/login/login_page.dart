@@ -96,10 +96,6 @@ class _LoginScreenState extends State<LoginScreen> {
         appBar: AppBar(
           toolbarHeight: 4,
           backgroundColor: Colors.transparent,
-          // expandedHeight: size.height * 0.07,
-          // pinned: true,
-
-          // backgroundColor: Colors.white,
           elevation: 0,
         ),
         backgroundColor: Colors.white,
@@ -284,7 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Divider(
                                   color: Colors.black,
                                   thickness: 1,
-                                  height: 70,
+                                  height: 90,
                                 ),
                               ),
                               Text('or',
@@ -296,45 +292,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Divider(
                                   color: Colors.black,
                                   thickness: 1,
-                                  height: 70,
+                                  height: 90,
                                 ),
                               ),
                             ],
                           ),
-//signin with
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Transform(
-                                transform: Matrix4.translationValues(0, -20, 0),
-                                child: Text('Sign in with',
-                                    style: TextStyle(fontSize: 12)),
-                              ),
-                            ],
-                          ),
-// fb, google
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: () {},
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  child: Image.asset('assets/fb.png'),
-                                ),
-                              ),
-                              GestureDetector(
-                                onTap: () {},
-                                child: Container(
-                                  width: 35,
-                                  height: 35,
-                                  child: Image.asset('assets/google.jpg'),
-                                ),
-                              ),
-                            ],
-                          ),
-
 //dont have account
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

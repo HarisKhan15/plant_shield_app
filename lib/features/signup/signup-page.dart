@@ -129,9 +129,6 @@ class _SignupScreenState extends State<SignupScreen> {
         appBar: AppBar(
           toolbarHeight: 4,
           backgroundColor: Colors.transparent,
-          // expandedHeight: size.height * 0.07,
-          // pinned: true,
-          // backgroundColor: Colors.white,
           elevation: 0,
         ),
         backgroundColor: Colors.white,
@@ -176,7 +173,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     if (value.isNotEmpty) {
                                       return 'Enter a valid email';
                                     } else {
-                                      return null; // Return null if email is empty and no validation yet
+                                      return null; 
                                     }
                                   }
                                   return null;
@@ -184,7 +181,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 decoration: constantInputDecoration(
                                   hintText: 'Email',
                                   suffixImagePath:
-                                      'assets/mail.png', // Provide the image asset path here
+                                      'assets/mail.png', 
                                 ),
                               ),
                             ),
@@ -362,7 +359,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               ),
                             ),
 
-                            SizedBox(height: 15),
+                            SizedBox(height: 20),
 //sign up button
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -402,7 +399,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   child: Divider(
                                     color: Colors.black,
                                     thickness: 1,
-                                    height: 70,
+                                    height: 90,
                                   ),
                                 ),
                                 Text('or',
@@ -414,41 +411,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                   child: Divider(
                                     color: Colors.black,
                                     thickness: 1,
-                                    height: 70,
-                                  ),
-                                ),
-                              ],
-                            ),
-//signin with
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Transform(
-                                  transform:
-                                      Matrix4.translationValues(0, -20, 0),
-                                  child: Text('Sign up with',
-                                      style: TextStyle(fontSize: 12)),
-                                ),
-                              ],
-                            ),
-// fb, google
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: Container(
-                                    width: 40,
-                                    height: 40,
-                                    child: Image.asset('assets/fb.png'),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: Container(
-                                    width: 35,
-                                    height: 35,
-                                    child: Image.asset('assets/google.jpg'),
+                                    height: 90,
                                   ),
                                 ),
                               ],
