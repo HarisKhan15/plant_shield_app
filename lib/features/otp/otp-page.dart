@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, use_build_context_synchronously, prefer_typing_uninitialized_variables
 
 import 'dart:async';
 import 'dart:convert';
@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
+import 'package:plant_shield_app/features/changepassword/change-password-page.dart';
 import 'package:plant_shield_app/features/welcome/welcome-page.dart';
 import 'package:plant_shield_app/models/user-registration.dart';
 import 'package:plant_shield_app/models/verify-otp.dart';
@@ -15,7 +16,10 @@ import 'package:plant_shield_app/services/user-service.dart';
 
 class OtpScreen extends StatefulWidget {
   final UserRegistration userRegistration;
-  const OtpScreen({Key? key, required this.userRegistration}) : super(key: key);
+  final String pageType;
+  const OtpScreen(
+      {Key? key, required this.userRegistration, required this.pageType})
+      : super(key: key);
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -28,6 +32,7 @@ class _OtpScreenState extends State<OtpScreen> {
   final UserService _userService = UserService();
   final OTPService _otpService = OTPService();
   UserRegistration? userRegistration;
+  String? pageType;
 
   late Timer _timer;
   int _start = 60;
@@ -36,10 +41,11 @@ class _OtpScreenState extends State<OtpScreen> {
   void initState() {
     super.initState();
     userRegistration = widget.userRegistration;
+    pageType = widget.pageType;
     startTimer();
   }
 
-  Future<void> verifyOtpAndSignIn() async {
+  Future<void> verifyOtp() async {
     Response? response;
     try {
       LoadingDialog.showLoadingDialog(context);
@@ -55,7 +61,11 @@ class _OtpScreenState extends State<OtpScreen> {
       );
     }
     if (response != null && response.statusCode == 200) {
-      registerUser();
+      if (pageType == Constants.SIGN_UP) {
+        registerUser();
+      } else if (pageType == Constants.FORGET_PASSWORD) {
+        forgetPassword();
+      }
     } else {
       Navigator.of(context).pop();
       Map<String, dynamic> errorJson = jsonDecode(response!.body);
@@ -102,6 +112,18 @@ class _OtpScreenState extends State<OtpScreen> {
         ),
       );
     }
+  }
+
+  void forgetPassword() {
+    Navigator.of(context).pop();
+    Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ChangePasswordScreen(
+                    fromSettings:false,
+                    username: userRegistration!.username,
+                  )),
+        );
   }
 
   Future<void> _resendOtp() async {
@@ -326,7 +348,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             color: Colors.white,
                             onPressed: () {
                               if (_isOtpEntered()) {
-                                verifyOtpAndSignIn();
+                                verifyOtp();
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
