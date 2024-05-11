@@ -335,9 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 List<Plant> favoritedPlants =
                     _plantList.where((plant) => plant.isFavorated).toList();
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => MyplantsScreen(
-                          favoritedPlants: favoritedPlants,
-                        )));
+                    builder: (context) => MyPlantsScreen()));
               },
             ),
             Divider(
