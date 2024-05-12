@@ -1,69 +1,109 @@
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously
+
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
+import 'package:http/http.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
-import 'package:plant_shield_app/features/plantDetail/detail_page.dart';
+import 'package:plant_shield_app/features/Components/loader.dart';
+import 'package:plant_shield_app/features/home/selectedImage.dart';
+import 'package:plant_shield_app/models/plant-detection.dart';
+import 'package:plant_shield_app/models/user-plant-detail.dart';
+import 'package:plant_shield_app/models/user-plants.dart';
+import 'package:plant_shield_app/services/user-plant-service.dart';
 
 class MyPlantsScreen extends StatefulWidget {
+  final String username;
+  final List<UserPlant> userplants;
+  const MyPlantsScreen(
+      {Key? key, required this.username, required this.userplants})
+      : super(key: key);
   @override
   State<MyPlantsScreen> createState() => _MyPlantsScreenState();
 }
 
 class _MyPlantsScreenState extends State<MyPlantsScreen> {
-  late List<Map<String, dynamic>> favoritedPlants;
-
+  List<UserPlant> userPlants = [];
+  String? username;
+  final UserPlantService _userPlantService = UserPlantService();
   @override
   void initState() {
     super.initState();
-    favoritedPlants = [
-      {
-        "category": "Outdoor",
-        "name": "Apple",
-        "image": "assets/userplant.png",
-        "lastWatered": DateTime.now(),
-        "wateringInterval": Duration(minutes: 1),
-        "isOverdue": false,
-      },
-      {
-        "category": "Indoor",
-        "name": "Rose",
-        "image": "assets/userplant.png",
-        "lastWatered": DateTime.now(),
-        "wateringInterval": Duration(hours: 2),
-        "isOverdue": false,
-      },
-      {
-        "category": "Indoor",
-        "name": "Rose",
-        "image": "assets/userplant.png",
-        "lastWatered": DateTime.now(),
-        "wateringInterval": Duration(hours: 2),
-        "isOverdue": false,
-      },
-    ];
-
-    Timer.periodic(Duration(minutes: 1), (Timer timer) {
-      _checkAndWaterPlants();
+    setState(() {
+      username = widget.username;
+      userPlants = widget.userplants;
     });
+    _checkAndWaterPlants();
+    // Timer.periodic(Duration(minutes: 1), (Timer timer) {
+    //   _checkAndWaterPlants();
+    // });
+  }
+
+  void _openUserPlantDetails(int index) async {
+    Response? response;
+    try {
+      LoadingDialog.showLoadingDialog(context);
+      response = await _userPlantService.fetchSpecificUserPlant(
+          username!, userPlants[index].userPlantId);
+
+      if (response != null && response.statusCode == 200) {
+        final Map<String, dynamic> data =
+            json.decode(response.body)['User Plant'];
+        UserPlantDetail userPlantDetail = UserPlantDetail.fromJson(data);
+        PlantDetection plantDetection =
+            PlantDetection.fromJsonForDeatilView(data);
+        File imageFile = File('');
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => SelectedImageScreen(
+                      username: username!,
+                      detectedPlantDetails: plantDetection,
+                      imageFile: imageFile,
+                      fromMyPlants: true,
+                      userPlantDetail: userPlantDetail,
+                    )));
+      } else {
+        Navigator.of(context).pop();
+        Map<String, dynamic> errorJson = jsonDecode(response!.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorJson['error']),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      Navigator.of(context).pop();
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _checkAndWaterPlants() {
     DateTime currentTime = DateTime.now();
-    setState(() {
-      favoritedPlants.forEach((plant) {
-        DateTime lastWatered = plant['lastWatered'];
-        Duration wateringInterval = plant['wateringInterval'];
-        DateTime nextWateringTime = lastWatered.add(wateringInterval);
+    for (var plant in userPlants) {
+      DateTime lastWatered = plant.lastWatered;
+      Duration wateringInterval =
+          Duration(hours: int.parse(plant.wateringSchedule));
+      DateTime nextWateringTime = lastWatered.add(wateringInterval);
 
-        if (currentTime.isAfter(nextWateringTime)) {
-          plant['lastWatered'] = DateTime.now();
-          plant['isOverdue'] = false;
-        } else {
-          plant['isOverdue'] = true;
-        }
-      });
-    });
+      if (currentTime.isBefore(nextWateringTime)) {
+        setState(() {
+          plant.isOverDue = false;
+        });
+      }
+    }
   }
 
   @override
@@ -104,7 +144,7 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
           ),
         ),
       ),
-      body: favoritedPlants.isEmpty
+      body: userPlants.isEmpty
           ? Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,7 +158,7 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
                     height: 10,
                   ),
                   Text(
-                    'Your Plants',
+                    'Plaese add Plants from Home screen',
                     style: TextStyle(
                       color: Constants.primaryColor,
                       fontWeight: FontWeight.w300,
@@ -132,7 +172,7 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               height: size.height * 1,
               child: ListView.builder(
-                itemCount: favoritedPlants.length,
+                itemCount: userPlants.length,
                 scrollDirection: Axis.vertical,
                 physics: const BouncingScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
@@ -144,9 +184,11 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
   }
 
   Widget _buildPlantCard(int index, Size size) {
+    Uint8List bytes =
+        Uint8List.fromList(base64.decode(userPlants[index].userPlantImage));
     return GestureDetector(
       onTap: () {
-      
+        _openUserPlantDetails(index);
       },
       child: Container(
         decoration: BoxDecoration(
@@ -166,10 +208,12 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
                 Padding(
                   padding: const EdgeInsets.all(5),
                   child: CircleAvatar(
-                    radius: size.height* 0.05,
-                    backgroundImage: AssetImage(
-                      favoritedPlants[index]["image"]!,
-                    ),
+                    radius: size.height * 0.05,
+                    backgroundImage: Image.memory(
+                      bytes,
+                      width: 500,
+                      fit: BoxFit.cover,
+                    ).image,
                   ),
                 ),
                 Positioned(
@@ -178,37 +222,42 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                        Text(
-                        favoritedPlants[index]["name"]!,
+                      Text(
+                        userPlants[index].plantName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: size.width < 600 ? 20.0 : 18.0,
                           color: Constants.blackColor,
                         ),
                       ),
-                       SizedBox(height: 2),
+                      SizedBox(height: 2),
                       Text(
-                        favoritedPlants[index]["category"]!,
+                        userPlants[index].species,
                         style: TextStyle(
                           fontSize: size.width < 600 ? 18.0 : 20.0,
                           color: Constants.primaryColor,
                         ),
                       ),
-                    
                     ],
                   ),
                 ),
               ],
             ),
             Padding(
-              padding: EdgeInsets.only(
-                  right: 13), 
+              padding: EdgeInsets.only(right: 13),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  favoritedPlants[index]['isOverdue']
-                      ? Icon(Icons.warning, color: Colors.red.withOpacity(0.9), size: 30)
+                  userPlants[index].currentDisease == Constants.HEALTHY_PLANT
+                      ? Icon(Icons.health_and_safety_sharp,
+                          color: Colors.green, size: 30)
+                      : Icon(Icons.healing,
+                          color: Color.fromARGB(255, 236, 21, 21), size: 30),
+                  SizedBox(height: 13.0),
+                  userPlants[index].isOverDue
+                      ? Icon(Icons.warning,
+                          color: Colors.red.withOpacity(0.9), size: 30)
                       : Icon(Icons.check_circle, color: Colors.green, size: 30),
                 ],
               ),

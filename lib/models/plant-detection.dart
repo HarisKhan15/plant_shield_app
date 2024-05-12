@@ -107,4 +107,28 @@ class PlantDetection {
       'disease_possible_steps': diseasePossibleSteps,
     };
   }
+
+  factory PlantDetection.fromJsonForDeatilView(Map<String, dynamic> json) {
+    return PlantDetection(
+      plantId: json['plant_id'] ?? 0,
+      plantName: json['plant_name'] ?? '',
+      description: json['description'] ?? '',
+      species: json['species'] ?? '',
+      speciesDetail: json['species_detail'] ?? '',
+      maxLife: json['max_life'] ?? '',
+      wateringSchedule: json['watering_schedule'] ?? '',
+      wateringScheduleDetail: json['watering_schedule_detail'] ?? '',
+      sunlightRequirements: json['sunlight_requirements'] ?? '',
+      sunlightRequirementsDetail: json['sunlight_requirements_detail'] ?? '',
+      temperatureRequirements: json['temperature_requirements'] ?? '',
+      temperatureRequirementsDetail: json['temperature_requirements_detail'] ?? '',
+      humidity: json['humidity'] ?? '',
+      humidityDetail: json['humidity_detail'] ?? '',
+      notes: json['notes'] ?? '',
+      diseaseName: json['current_disease'] ?? '',
+      diseaseDescription: json['disease_description'] ?? '',
+      diseasePossibleSteps: json['disease_possible_steps'] ?? '',
+    );
+  }
+
 }

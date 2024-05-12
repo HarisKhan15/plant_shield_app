@@ -2,12 +2,15 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/models/create-user-plant.dart';
 import 'package:plant_shield_app/models/plant-detection.dart';
+import 'package:plant_shield_app/models/user-plant-detail.dart';
 import 'package:plant_shield_app/services/user-plant-service.dart';
 import 'package:tuple/tuple.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
@@ -35,12 +38,14 @@ class SelectedImageScreen extends StatefulWidget {
   final String username;
   final File imageFile;
   final bool fromMyPlants;
+  final UserPlantDetail userPlantDetail;
   const SelectedImageScreen(
       {Key? key,
       required this.username,
       required this.detectedPlantDetails,
       required this.imageFile,
-      required this.fromMyPlants})
+      required this.fromMyPlants,
+      required this.userPlantDetail})
       : super(key: key);
 
   @override
@@ -53,6 +58,8 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
   PlantDetection? plantDetection;
   String? username;
   File? imageFile;
+  bool? fromMyPlants;
+  UserPlantDetail? userPlantDetail;
   UserPlantService _userPlantService = UserPlantService();
 
   @override
@@ -63,6 +70,8 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
       plantDetection = widget.detectedPlantDetails;
       username = widget.username;
       imageFile = widget.imageFile;
+      fromMyPlants = widget.fromMyPlants;
+      userPlantDetail = widget.userPlantDetail;
     });
   }
 
@@ -113,11 +122,12 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
     }
   }
 
-  Widget _waterUpdate(BuildContext context, String lastWaterUpdate) {
+  Widget _waterUpdate(
+      BuildContext context, String messageForWatering, DateTime lastWatered) {
     bool _buttonClicked = false;
     int selectedIndex = 0;
 
-    if (widget.fromMyPlants) {
+    if (fromMyPlants!) {
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(60),
@@ -141,7 +151,31 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                     ),
                   ),
                   Text(
-                    lastWaterUpdate,
+                    DateFormat('yyyy-MM-dd HH:mm:ss').format(lastWatered),
+                    style: TextStyle(
+                      fontFamily: 'Lato-Bold',
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      color: Constants.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Next Watering',
+                    style: TextStyle(
+                      fontFamily: 'Mulish-VariableFont_wght',
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    messageForWatering,
                     style: TextStyle(
                       fontFamily: 'Lato-Bold',
                       fontWeight: FontWeight.w500,
@@ -220,7 +254,20 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
     Size size = MediaQuery.of(context).size;
     Widget waterUpdate = SizedBox.shrink();
     if (selectedButton == 'Water update') {
-      waterUpdate = _waterUpdate(context, '6 hours ago');
+      String messageForWatering = "";
+      DateTime currentTime = DateTime.now();
+      DateTime nextWateringTime = userPlantDetail!.lastWatered!
+          .add(Duration(hours: int.parse(plantDetection!.wateringSchedule)));
+
+      if (currentTime.isBefore(nextWateringTime)) {
+        Duration timeLeft = nextWateringTime.difference(currentTime);
+        int hoursLeft = timeLeft.inHours;
+        messageForWatering = "${hoursLeft} hours left";
+      } else {
+        messageForWatering = "Time for watering!";
+      }
+      waterUpdate = _waterUpdate(
+          context, messageForWatering, userPlantDetail!.lastWatered!);
     }
     return Scaffold(
       appBar: AppBar(
@@ -244,10 +291,16 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            Image.file(
-                              imageFile!,
-                              fit: BoxFit.cover,
-                            ),
+                            !(fromMyPlants!)
+                                ? Image.file(
+                                    imageFile!,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.memory(
+                                    Uint8List.fromList(base64.decode(
+                                        userPlantDetail!.userPlantImage)),
+                                    fit: BoxFit.cover,
+                                  ),
                             Align(
                               alignment: Alignment.topLeft,
                               child: Padding(
@@ -369,10 +422,9 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                               selectedButton = 'Water update';
                             });
                           },
-                          isVisible: widget.fromMyPlants,
+                          isVisible: fromMyPlants!,
                         ),
-                   
-                       _buildButtonWithSpacingBefore(
+                        _buildButtonWithSpacingBefore(
                           text: 'Details',
                           onPressed: () {
                             setState(() {
@@ -380,7 +432,6 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                             });
                           },
                         ),
-                      
                         _buildButtonWithSpacingBefore(
                           text: 'Health',
                           onPressed: () {
@@ -389,7 +440,6 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                             });
                           },
                         ),
-                      
                         _buildButtonWithSpacingBefore(
                           text: 'Care',
                           onPressed: () {
@@ -649,58 +699,57 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
   }
 
   Widget _buildHorizontalButton({
-  required String text,
-  required VoidCallback onPressed,
-  bool isVisible = true, 
-}) {
-  if (!isVisible) {
-    return SizedBox
-        .shrink(); 
-  }
+    required String text,
+    required VoidCallback onPressed,
+    bool isVisible = true,
+  }) {
+    if (!isVisible) {
+      return SizedBox.shrink();
+    }
 
-  return SizedBox(
-    width: 150,
-    child: Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          decoration: BoxDecoration(
-            color: Constants.primaryColor,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Center(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+    return SizedBox(
+      width: 150,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(20),
+          child: Ink(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              color: Constants.primaryColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Center(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-Widget _buildButtonWithSpacingBefore({
-  required String text,
-  required VoidCallback onPressed,
-  bool isVisible = true,
-}) {
-  return Row(
-    children: [
-      SizedBox(width: 10),
-      _buildHorizontalButton(
-        text: text,
-        onPressed: onPressed,
-        isVisible: isVisible,
-      ),
-    ],
-  );
-}
+  Widget _buildButtonWithSpacingBefore({
+    required String text,
+    required VoidCallback onPressed,
+    bool isVisible = true,
+  }) {
+    return Row(
+      children: [
+        SizedBox(width: 10),
+        _buildHorizontalButton(
+          text: text,
+          onPressed: onPressed,
+          isVisible: isVisible,
+        ),
+      ],
+    );
+  }
 }

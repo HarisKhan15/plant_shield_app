@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
+import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/favorites/favoritePlants_page.dart';
 import 'package:plant_shield_app/features/home/homePlant_widget.dart';
 import 'package:plant_shield_app/features/home/selectedImage.dart';
@@ -18,6 +20,8 @@ import 'package:plant_shield_app/features/home/plants_model.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:plant_shield_app/features/settings/Settings_page.dart';
 import 'package:plant_shield_app/models/plant-detection.dart';
+import 'package:plant_shield_app/models/user-plant-detail.dart';
+import 'package:plant_shield_app/models/user-plants.dart';
 import 'package:plant_shield_app/models/user.dart';
 import 'package:plant_shield_app/services/user-plant-service.dart';
 import 'package:plant_shield_app/services/user-service.dart';
@@ -88,17 +92,18 @@ class _HomeScreenState extends State<HomeScreen> {
           print(e);
         }
       });
-
       Navigator.pop(context);
       if (plantDetection != null) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => SelectedImageScreen(
-                username: username!,
-                detectedPlantDetails: plantDetection!,
-                imageFile: imageFile!, fromMyPlants: false,
-             ),
+              username: username!,
+              detectedPlantDetails: plantDetection!,
+              imageFile: imageFile!,
+              fromMyPlants: false,
+              userPlantDetail: UserPlantDetail(),
+            ),
           ),
         );
       } else {
@@ -176,6 +181,51 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(builder: (context) => LoginScreen()),
     );
+  }
+
+  Future<void> _goToMyPlants() async {
+    List<UserPlant> userPlants = [];
+    Response? response;
+    try {
+      LoadingDialog.showLoadingDialog(context);
+      response = await userPlantService.fetchUserPlants(username!);
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      Navigator.of(context).pop();
+    }
+    if (response != null && response.statusCode == 200) {
+      List<dynamic> data = json.decode(response.body)['User Plants'];
+      try {
+        userPlants = data
+            .map((item) => UserPlant.fromJson(item as Map<String, dynamic>))
+            .toList();
+      } catch (e) {
+        print(e);
+      }
+
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => MyPlantsScreen(
+                username: username!,
+                userplants: userPlants,
+              )));
+    } else {
+      Map<String, dynamic> errorJson = jsonDecode(response!.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorJson['error']),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -333,10 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontSize: size.width < 600 ? 16 : 18),
               ),
               onTap: () {
-                List<Plant> favoritedPlants =
-                    _plantList.where((plant) => plant.isFavorated).toList();
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => MyPlantsScreen()));
+                _goToMyPlants();
               },
             ),
             Divider(
