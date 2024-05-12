@@ -97,7 +97,8 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context) => SelectedImageScreen(
                 username: username!,
                 detectedPlantDetails: plantDetection!,
-                imageFile: imageFile!),
+                imageFile: imageFile!, fromMyPlants: false,
+             ),
           ),
         );
       } else {

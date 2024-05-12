@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:lottie/lottie.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/models/create-user-plant.dart';
 import 'package:plant_shield_app/models/plant-detection.dart';
@@ -33,12 +34,13 @@ class SelectedImageScreen extends StatefulWidget {
   final PlantDetection detectedPlantDetails;
   final String username;
   final File imageFile;
-
+  final bool fromMyPlants;
   const SelectedImageScreen(
       {Key? key,
       required this.username,
       required this.detectedPlantDetails,
-      required this.imageFile})
+      required this.imageFile,
+      required this.fromMyPlants})
       : super(key: key);
 
   @override
@@ -111,9 +113,115 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
     }
   }
 
+  Widget _waterUpdate(BuildContext context, String lastWaterUpdate) {
+    bool _buttonClicked = false;
+    int selectedIndex = 0;
+
+    if (widget.fromMyPlants) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(60),
+          color: Colors.grey[200],
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        child: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Last water',
+                    style: TextStyle(
+                      fontFamily: 'Mulish-VariableFont_wght',
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    lastWaterUpdate,
+                    style: TextStyle(
+                      fontFamily: 'Lato-Bold',
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      color: Constants.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 30),
+              Text(
+                "Plant care tip",
+                style: TextStyle(
+                  fontFamily: 'Lato-Bold',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20,
+                  color: Constants.primaryColor.withOpacity(0.9),
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Did your plant receive its recent watering?",
+                style: TextStyle(
+                  fontFamily: 'Lato-Bold',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
+                  color: Constants.primaryColor.withOpacity(0.7),
+                ),
+              ),
+              SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: _buttonClicked
+                        ? null
+                        : () {
+                            setState(() {
+                              _buttonClicked = true;
+                            });
+                          },
+                    style: ElevatedButton.styleFrom(
+                      primary: Constants.primaryColor.withOpacity(0.7),
+                      onPrimary: Colors.white,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(
+                            color: _buttonClicked
+                                ? Colors.grey
+                                : Constants.primaryColor),
+                      ),
+                    ),
+                    child: Text(
+                      'Watering Done',
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    Widget waterUpdate = SizedBox.shrink();
+    if (selectedButton == 'Water update') {
+      waterUpdate = _waterUpdate(context, '6 hours ago');
+    }
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 0,
@@ -254,8 +362,17 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        SizedBox(width: 15),
-                        _buildHorizontalButton(
+                        _buildButtonWithSpacingBefore(
+                          text: 'Water update',
+                          onPressed: () {
+                            setState(() {
+                              selectedButton = 'Water update';
+                            });
+                          },
+                          isVisible: widget.fromMyPlants,
+                        ),
+                   
+                       _buildButtonWithSpacingBefore(
                           text: 'Details',
                           onPressed: () {
                             setState(() {
@@ -263,8 +380,8 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                             });
                           },
                         ),
-                        SizedBox(width: 10),
-                        _buildHorizontalButton(
+                      
+                        _buildButtonWithSpacingBefore(
                           text: 'Health',
                           onPressed: () {
                             setState(() {
@@ -272,8 +389,8 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                             });
                           },
                         ),
-                        SizedBox(width: 10),
-                        _buildHorizontalButton(
+                      
+                        _buildButtonWithSpacingBefore(
                           text: 'Care',
                           onPressed: () {
                             setState(() {
@@ -281,7 +398,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                             });
                           },
                         ),
-                        SizedBox(width: 15),
+                        SizedBox(width: 10),
                       ],
                     ),
                   ),
@@ -388,6 +505,9 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                       ],
                     ),
                   ),
+                ),
+                SliverToBoxAdapter(
+                  child: waterUpdate,
                 ),
               ],
             ),
@@ -529,35 +649,58 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
   }
 
   Widget _buildHorizontalButton({
-    required String text,
-    required VoidCallback onPressed,
-  }) {
-    return SizedBox(
-      width: 150,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onPressed,
-          borderRadius: BorderRadius.circular(20),
-          child: Ink(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            decoration: BoxDecoration(
-              color: Constants.primaryColor,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Center(
-              child: Text(
-                text,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+  required String text,
+  required VoidCallback onPressed,
+  bool isVisible = true, 
+}) {
+  if (!isVisible) {
+    return SizedBox
+        .shrink(); 
+  }
+
+  return SizedBox(
+    width: 150,
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            color: Constants.primaryColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
+
+Widget _buildButtonWithSpacingBefore({
+  required String text,
+  required VoidCallback onPressed,
+  bool isVisible = true,
+}) {
+  return Row(
+    children: [
+      SizedBox(width: 10),
+      _buildHorizontalButton(
+        text: text,
+        onPressed: onPressed,
+        isVisible: isVisible,
+      ),
+    ],
+  );
+}
 }
