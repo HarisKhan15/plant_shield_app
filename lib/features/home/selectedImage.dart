@@ -253,7 +253,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     Widget waterUpdate = SizedBox.shrink();
-    if (selectedButton == 'Water update') {
+    if (selectedButton == 'Watering') {
       String messageForWatering = "";
       DateTime currentTime = DateTime.now();
       DateTime nextWateringTime = userPlantDetail!.lastWatered!
@@ -416,10 +416,10 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                       scrollDirection: Axis.horizontal,
                       children: [
                         _buildButtonWithSpacingBefore(
-                          text: 'Water update',
+                          text: 'Watering',
                           onPressed: () {
                             setState(() {
-                              selectedButton = 'Water update';
+                              selectedButton = 'Watering';
                             });
                           },
                           isVisible: fromMyPlants!,
