@@ -61,18 +61,30 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
   bool? fromMyPlants;
   UserPlantDetail? userPlantDetail;
   UserPlantService _userPlantService = UserPlantService();
+  String messageForWatering = "Time for watering!";
+  bool buttonClicked = false;
+  Color buttonColor = Constants.primaryColor.withOpacity(0.7);
+  DateTime lastWatered = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    selectedButton = 'Details';
     setState(() {
       plantDetection = widget.detectedPlantDetails;
       username = widget.username;
       imageFile = widget.imageFile;
       fromMyPlants = widget.fromMyPlants;
       userPlantDetail = widget.userPlantDetail;
+      if (fromMyPlants!) {
+        lastWatered = userPlantDetail!.lastWatered!;
+      }
     });
+    if (fromMyPlants!) {
+      isButtonClicked = true;
+      selectedButton = 'Watering';
+    } else {
+      selectedButton = 'Details';
+    }
   }
 
   CreateUserPlant _constructUserPlantObject() {
@@ -94,7 +106,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
       if (response != null && response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Plant added successfully into my plants.'),
+            content: Text('Plant added successfully into my plants'),
             duration: Duration(seconds: 2),
             backgroundColor: Colors.green,
           ),
@@ -122,11 +134,46 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
     }
   }
 
-  Widget _waterUpdate(
-      BuildContext context, String messageForWatering, DateTime lastWatered) {
-    bool _buttonClicked = false;
-    int selectedIndex = 0;
+  void updateWatering() async {
+    Response? response;
+    try {
+      LoadingDialog.showLoadingDialog(context);
 
+      response = await _userPlantService.updateWatering(
+          username!, userPlantDetail!.userPlantId, plantDetection!.diseaseName);
+
+      if (response != null && response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Your Plant is successfully watered'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        Map<String, dynamic> errorJson = jsonDecode(response!.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorJson['error']),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      Navigator.of(context).pop();
+    }
+  }
+
+  Widget _waterUpdate(BuildContext context) {
     if (fromMyPlants!) {
       return Container(
         decoration: BoxDecoration(
@@ -210,24 +257,27 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: _buttonClicked
+                    onPressed: buttonClicked
                         ? null
                         : () {
+                            updateWatering();
+                            DateTime currentTime = DateTime.now();
                             setState(() {
-                              _buttonClicked = true;
+                              buttonClicked = true;
+                              lastWatered = currentTime;
+                              messageForWatering =
+                                  "${plantDetection!.wateringSchedule} hours left";
+                              buttonColor = Colors.grey;
                             });
                           },
                     style: ElevatedButton.styleFrom(
-                      primary: Constants.primaryColor.withOpacity(0.7),
+                      primary: buttonColor,
                       onPrimary: Colors.white,
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(
-                            color: _buttonClicked
-                                ? Colors.grey
-                                : Constants.primaryColor),
+                        side: BorderSide(color: buttonColor),
                       ),
                     ),
                     child: Text(
@@ -254,7 +304,6 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
     Size size = MediaQuery.of(context).size;
     Widget waterUpdate = SizedBox.shrink();
     if (selectedButton == 'Watering') {
-      String messageForWatering = "";
       DateTime currentTime = DateTime.now();
       DateTime nextWateringTime = userPlantDetail!.lastWatered!
           .add(Duration(hours: int.parse(plantDetection!.wateringSchedule)));
@@ -263,11 +312,11 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
         Duration timeLeft = nextWateringTime.difference(currentTime);
         int hoursLeft = timeLeft.inHours;
         messageForWatering = "${hoursLeft} hours left";
-      } else {
-        messageForWatering = "Time for watering!";
+        buttonClicked = true;
+        buttonColor = Colors.grey;
       }
-      waterUpdate = _waterUpdate(
-          context, messageForWatering, userPlantDetail!.lastWatered!);
+
+      waterUpdate = _waterUpdate(context);
     }
     return Scaffold(
       appBar: AppBar(
@@ -377,8 +426,8 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                                 ? null
                                 : () {
                                     setState(() {
-                                      isButtonClicked = true;
                                       addIntoUserPlant();
+                                      isButtonClicked = true;
                                     });
                                   },
                             style: ElevatedButton.styleFrom(

@@ -82,4 +82,22 @@ class UserPlantService extends ChangeNotifier {
     }
     return null;
   }
+
+  Future<http.Response?> updateWatering(
+      String username, int userPlantId, String currentDisease) async {
+    try {
+      Map<String, String> body = {'last_watered': 'now','current_disease':currentDisease};
+      var request = http.MultipartRequest(
+          'PUT', UrlConfig.buildUri('user-plants/${username}/${userPlantId}'));
+
+      request.fields.addAll(body);
+
+      var streamedResponse = await request.send();
+
+      return await http.Response.fromStream(streamedResponse);
+    } catch (e) {
+      print('Login error: $e');
+      throw Exception('Failed to Water plant. Please try again later.');
+    }
+  }
 }
