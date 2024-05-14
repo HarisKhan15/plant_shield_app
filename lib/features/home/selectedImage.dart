@@ -2,11 +2,15 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/models/create-user-plant.dart';
 import 'package:plant_shield_app/models/plant-detection.dart';
+import 'package:plant_shield_app/models/user-plant-detail.dart';
 import 'package:plant_shield_app/services/user-plant-service.dart';
 import 'package:tuple/tuple.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
@@ -33,12 +37,15 @@ class SelectedImageScreen extends StatefulWidget {
   final PlantDetection detectedPlantDetails;
   final String username;
   final File imageFile;
-
+  final bool fromMyPlants;
+  final UserPlantDetail userPlantDetail;
   const SelectedImageScreen(
       {Key? key,
       required this.username,
       required this.detectedPlantDetails,
-      required this.imageFile})
+      required this.imageFile,
+      required this.fromMyPlants,
+      required this.userPlantDetail})
       : super(key: key);
 
   @override
@@ -51,17 +58,33 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
   PlantDetection? plantDetection;
   String? username;
   File? imageFile;
+  bool? fromMyPlants;
+  UserPlantDetail? userPlantDetail;
   UserPlantService _userPlantService = UserPlantService();
+  String messageForWatering = "Time for watering!";
+  bool buttonClicked = false;
+  Color buttonColor = Constants.primaryColor.withOpacity(0.7);
+  DateTime lastWatered = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    selectedButton = 'Details';
     setState(() {
       plantDetection = widget.detectedPlantDetails;
       username = widget.username;
       imageFile = widget.imageFile;
+      fromMyPlants = widget.fromMyPlants;
+      userPlantDetail = widget.userPlantDetail;
+      if (fromMyPlants!) {
+        lastWatered = userPlantDetail!.lastWatered!;
+      }
     });
+    if (fromMyPlants!) {
+      isButtonClicked = true;
+      selectedButton = 'Watering';
+    } else {
+      selectedButton = 'Details';
+    }
   }
 
   CreateUserPlant _constructUserPlantObject() {
@@ -83,7 +106,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
       if (response != null && response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Plant added successfully into my plants.'),
+            content: Text('Plant added successfully into my plants'),
             duration: Duration(seconds: 2),
             backgroundColor: Colors.green,
           ),
@@ -111,9 +134,190 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
     }
   }
 
+  void updateWatering() async {
+    Response? response;
+    try {
+      LoadingDialog.showLoadingDialog(context);
+
+      response = await _userPlantService.updateWatering(
+          username!, userPlantDetail!.userPlantId, plantDetection!.diseaseName);
+
+      if (response != null && response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Your Plant is successfully watered'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        Map<String, dynamic> errorJson = jsonDecode(response!.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorJson['error']),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      Navigator.of(context).pop();
+    }
+  }
+
+  Widget _waterUpdate(BuildContext context) {
+    if (fromMyPlants!) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(60),
+          color: Colors.grey[200],
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        child: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Last water',
+                    style: TextStyle(
+                      fontFamily: 'Mulish-VariableFont_wght',
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    DateFormat('yyyy-MM-dd HH:mm:ss').format(lastWatered),
+                    style: TextStyle(
+                      fontFamily: 'Lato-Bold',
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      color: Constants.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Next Watering',
+                    style: TextStyle(
+                      fontFamily: 'Mulish-VariableFont_wght',
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Text(
+                    messageForWatering,
+                    style: TextStyle(
+                      fontFamily: 'Lato-Bold',
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      color: Constants.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 30),
+              Text(
+                "Plant care tip",
+                style: TextStyle(
+                  fontFamily: 'Lato-Bold',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20,
+                  color: Constants.primaryColor.withOpacity(0.9),
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Did your plant receive its recent watering?",
+                style: TextStyle(
+                  fontFamily: 'Lato-Bold',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 15,
+                  color: Constants.primaryColor.withOpacity(0.7),
+                ),
+              ),
+              SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: buttonClicked
+                        ? null
+                        : () {
+                            updateWatering();
+                            DateTime currentTime = DateTime.now();
+                            setState(() {
+                              buttonClicked = true;
+                              lastWatered = currentTime;
+                              messageForWatering =
+                                  "${plantDetection!.wateringSchedule} hours left";
+                              buttonColor = Colors.grey;
+                            });
+                          },
+                    style: ElevatedButton.styleFrom(
+                      primary: buttonColor,
+                      onPrimary: Colors.white,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(color: buttonColor),
+                      ),
+                    ),
+                    child: Text(
+                      'Watering Done',
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    Widget waterUpdate = SizedBox.shrink();
+    if (selectedButton == 'Watering') {
+      DateTime currentTime = DateTime.now();
+      DateTime nextWateringTime = userPlantDetail!.lastWatered!
+          .add(Duration(hours: int.parse(plantDetection!.wateringSchedule)));
+
+      if (currentTime.isBefore(nextWateringTime)) {
+        Duration timeLeft = nextWateringTime.difference(currentTime);
+        int hoursLeft = timeLeft.inHours;
+        messageForWatering = "${hoursLeft} hours left";
+        buttonClicked = true;
+        buttonColor = Colors.grey;
+      }
+
+      waterUpdate = _waterUpdate(context);
+    }
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 0,
@@ -136,10 +340,16 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
-                            Image.file(
-                              imageFile!,
-                              fit: BoxFit.cover,
-                            ),
+                            !(fromMyPlants!)
+                                ? Image.file(
+                                    imageFile!,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.memory(
+                                    Uint8List.fromList(base64.decode(
+                                        userPlantDetail!.userPlantImage)),
+                                    fit: BoxFit.cover,
+                                  ),
                             Align(
                               alignment: Alignment.topLeft,
                               child: Padding(
@@ -216,8 +426,8 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                                 ? null
                                 : () {
                                     setState(() {
-                                      isButtonClicked = true;
                                       addIntoUserPlant();
+                                      isButtonClicked = true;
                                     });
                                   },
                             style: ElevatedButton.styleFrom(
@@ -254,8 +464,16 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        SizedBox(width: 15),
-                        _buildHorizontalButton(
+                        _buildButtonWithSpacingBefore(
+                          text: 'Watering',
+                          onPressed: () {
+                            setState(() {
+                              selectedButton = 'Watering';
+                            });
+                          },
+                          isVisible: fromMyPlants!,
+                        ),
+                        _buildButtonWithSpacingBefore(
                           text: 'Details',
                           onPressed: () {
                             setState(() {
@@ -263,8 +481,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                             });
                           },
                         ),
-                        SizedBox(width: 10),
-                        _buildHorizontalButton(
+                        _buildButtonWithSpacingBefore(
                           text: 'Health',
                           onPressed: () {
                             setState(() {
@@ -272,8 +489,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                             });
                           },
                         ),
-                        SizedBox(width: 10),
-                        _buildHorizontalButton(
+                        _buildButtonWithSpacingBefore(
                           text: 'Care',
                           onPressed: () {
                             setState(() {
@@ -281,7 +497,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                             });
                           },
                         ),
-                        SizedBox(width: 15),
+                        SizedBox(width: 10),
                       ],
                     ),
                   ),
@@ -388,6 +604,9 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                       ],
                     ),
                   ),
+                ),
+                SliverToBoxAdapter(
+                  child: waterUpdate,
                 ),
               ],
             ),
@@ -531,7 +750,12 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
   Widget _buildHorizontalButton({
     required String text,
     required VoidCallback onPressed,
+    bool isVisible = true,
   }) {
+    if (!isVisible) {
+      return SizedBox.shrink();
+    }
+
     return SizedBox(
       width: 150,
       child: Material(
@@ -558,6 +782,23 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildButtonWithSpacingBefore({
+    required String text,
+    required VoidCallback onPressed,
+    bool isVisible = true,
+  }) {
+    return Row(
+      children: [
+        SizedBox(width: 10),
+        _buildHorizontalButton(
+          text: text,
+          onPressed: onPressed,
+          isVisible: isVisible,
+        ),
+      ],
     );
   }
 }

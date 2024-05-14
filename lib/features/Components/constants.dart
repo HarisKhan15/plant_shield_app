@@ -19,6 +19,7 @@ class Constants {
       "Find almost all types of plants that you like here.";
   static var SIGN_UP = "signUp";
   static var FORGET_PASSWORD = "forgetPassword";
+  static var HEALTHY_PLANT = "Healthy";
 }
 
 //text feild styling
