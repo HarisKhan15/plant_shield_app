@@ -6,9 +6,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
+import 'package:plant_shield_app/features/myPlants/feedback-form.dart';
 import 'package:plant_shield_app/models/create-user-plant.dart';
+import 'package:plant_shield_app/models/feedback-model.dart';
 import 'package:plant_shield_app/models/plant-detection.dart';
 import 'package:plant_shield_app/models/user-plant-detail.dart';
 import 'package:plant_shield_app/services/user-plant-service.dart';
@@ -39,13 +40,15 @@ class SelectedImageScreen extends StatefulWidget {
   final File imageFile;
   final bool fromMyPlants;
   final UserPlantDetail userPlantDetail;
+  final FeedBackObject isFeedBackRequired;
   const SelectedImageScreen(
       {Key? key,
       required this.username,
       required this.detectedPlantDetails,
       required this.imageFile,
       required this.fromMyPlants,
-      required this.userPlantDetail})
+      required this.userPlantDetail,
+      required this.isFeedBackRequired})
       : super(key: key);
 
   @override
@@ -60,7 +63,8 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
   File? imageFile;
   bool? fromMyPlants;
   UserPlantDetail? userPlantDetail;
-  UserPlantService _userPlantService = UserPlantService();
+  final UserPlantService _userPlantService = UserPlantService();
+  FeedBackObject? isFeedBackRequired;
   String messageForWatering = "Time for watering!";
   bool buttonClicked = false;
   Color buttonColor = Constants.primaryColor.withOpacity(0.7);
@@ -75,6 +79,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
       imageFile = widget.imageFile;
       fromMyPlants = widget.fromMyPlants;
       userPlantDetail = widget.userPlantDetail;
+      isFeedBackRequired = widget.isFeedBackRequired;
       if (fromMyPlants!) {
         lastWatered = userPlantDetail!.lastWatered!;
       }
@@ -198,7 +203,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                     ),
                   ),
                   Text(
-                    DateFormat('yyyy-MM-dd HH:mm:ss').format(lastWatered),
+                    DateFormat('MMM dd, yyyy - h:mm a').format(lastWatered),
                     style: TextStyle(
                       fontFamily: 'Lato-Bold',
                       fontWeight: FontWeight.w500,
@@ -271,8 +276,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                             });
                           },
                     style: ElevatedButton.styleFrom(
-                      primary: buttonColor,
-                      onPrimary: Colors.white,
+                      foregroundColor: Colors.white, backgroundColor: buttonColor,
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                       shape: RoundedRectangleBorder(
@@ -311,12 +315,25 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
       if (currentTime.isBefore(nextWateringTime)) {
         Duration timeLeft = nextWateringTime.difference(currentTime);
         int hoursLeft = timeLeft.inHours;
-        messageForWatering = "${hoursLeft} hours left";
+        messageForWatering = "$hoursLeft hours left";
         buttonClicked = true;
         buttonColor = Colors.grey;
       }
 
       waterUpdate = _waterUpdate(context);
+    }
+    if (isFeedBackRequired!.isFeedBackRequired) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return FeedbackDialog(
+              detectionId: isFeedBackRequired!.detectionId,
+            );
+          },
+        );
+      });
+      isFeedBackRequired!.isFeedBackRequired = false;
     }
     return Scaffold(
       appBar: AppBar(
@@ -431,9 +448,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                                     });
                                   },
                             style: ElevatedButton.styleFrom(
-                              shape: CircleBorder(),
-                              primary: Colors.white,
-                              onPrimary: Colors.green,
+                              foregroundColor: Colors.green, backgroundColor: Colors.white, shape: CircleBorder(),
                               padding: EdgeInsets.all(8),
                               elevation: 7,
                               shadowColor: Colors.grey,

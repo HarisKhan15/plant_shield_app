@@ -1,10 +1,16 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
+import 'package:plant_shield_app/features/Components/loader.dart';
+import 'package:plant_shield_app/services/detection_service.dart';
 
 class FeedbackDialog extends StatefulWidget {
-  const FeedbackDialog({Key? key}) : super(key: key);
+  final int detectionId;
+  const FeedbackDialog({Key? key, required this.detectionId}) : super(key: key);
 
   @override
   _FeedbackDialogState createState() => _FeedbackDialogState();
@@ -14,6 +20,8 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
   bool? isWateringUpdateHelpful;
   bool? isDetectionAccurate;
   bool isSubmitting = false;
+  bool isFieldsFilled = false;
+  final DetectionService _detectionService = DetectionService();
 
   @override
   Widget build(BuildContext context) {
@@ -96,6 +104,19 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
                 Text('No'),
               ],
             ),
+            Row(
+              children: [
+                isFieldsFilled
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          'Please fill both fields.',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      )
+                    : Container()
+              ],
+            )
           ],
         ),
       ),
@@ -116,7 +137,14 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
           onPressed: isSubmitting
               ? null
               : () {
-                  submitFeedback();
+                  if (isDetectionAccurate == null ||
+                      isWateringUpdateHelpful == null) {
+                    setState(() {
+                      isFieldsFilled = true;
+                    });
+                  } else {
+                    submitFeedback();
+                  }
                 },
           child: Text(
             'Submit',
@@ -134,7 +162,8 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
     setState(() {
       isSubmitting = true;
     });
-    Future.delayed(Duration(seconds: 2), () {
+    updateFeedBack();
+    Future.delayed(Duration(milliseconds: 500), () {
       setState(() {
         isSubmitting = false;
       });
@@ -146,5 +175,38 @@ class _FeedbackDialogState extends State<FeedbackDialog> {
         ),
       );
     });
+  }
+
+  void updateFeedBack() async {
+    Response? response;
+    try {
+      LoadingDialog.showLoadingDialog(context);
+
+      response = await _detectionService.updateFeedBack(
+          widget.detectionId, isDetectionAccurate!);
+
+      if (response != null && response.statusCode == 200) {
+        return;
+      } else {
+        Map<String, dynamic> errorJson = jsonDecode(response!.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorJson['error']),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      Navigator.of(context).pop();
+    }
   }
 }
