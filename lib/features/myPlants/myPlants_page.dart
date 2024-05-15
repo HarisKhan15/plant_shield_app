@@ -10,9 +10,11 @@ import 'package:http/http.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/home/selectedImage.dart';
+import 'package:plant_shield_app/models/feedback-model.dart';
 import 'package:plant_shield_app/models/plant-detection.dart';
 import 'package:plant_shield_app/models/user-plant-detail.dart';
 import 'package:plant_shield_app/models/user-plants.dart';
+import 'package:plant_shield_app/services/detection_service.dart';
 import 'package:plant_shield_app/services/user-plant-service.dart';
 
 class MyPlantsScreen extends StatefulWidget {
@@ -29,6 +31,7 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
   List<UserPlant> userPlants = [];
   String? username;
   final UserPlantService _userPlantService = UserPlantService();
+  final DetectionService _detectionService = DetectionService();
   @override
   void initState() {
     super.initState();
@@ -56,6 +59,8 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
         PlantDetection plantDetection =
             PlantDetection.fromJsonForDeatilView(data);
         File imageFile = File('');
+        FeedBackObject? isFeedBackRequired = await _detectionService
+            .fetchUserPlants(userPlantDetail.userPlantId);
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -65,6 +70,7 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
                       imageFile: imageFile,
                       fromMyPlants: true,
                       userPlantDetail: userPlantDetail,
+                      isFeedBackRequired: isFeedBackRequired!,
                     )));
       } else {
         Navigator.of(context).pop();

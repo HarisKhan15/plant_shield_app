@@ -19,6 +19,7 @@ import 'package:plant_shield_app/features/plantDetail/detail_page.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:plant_shield_app/features/settings/Settings_page.dart';
+import 'package:plant_shield_app/models/feedback-model.dart';
 import 'package:plant_shield_app/models/plant-detection.dart';
 import 'package:plant_shield_app/models/user-plant-detail.dart';
 import 'package:plant_shield_app/models/user-plants.dart';
@@ -103,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
               imageFile: imageFile!,
               fromMyPlants: false,
               userPlantDetail: UserPlantDetail(),
+              isFeedBackRequired: FeedBackObject.fromJson({}),
             ),
           ),
         );
