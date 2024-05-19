@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, sort_child_properties_last, use_build_context_synchronously, depend_on_referenced_packages, implementation_imports
 
 import 'dart:convert';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/src/response.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
@@ -47,10 +48,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _logIn() async {
     if (_formKey.currentState!.validate()) {
       Response? response;
+      String? deviceToken = await FirebaseMessaging.instance.getToken();
       try {
         LoadingDialog.showLoadingDialog(context);
         response = await _userService.loginUser(
-            _usernameController.text, _passwordController.text);
+            _usernameController.text, _passwordController.text,deviceToken ?? '');
       } catch (e) {
         print("Error: $e");
         ScaffoldMessenger.of(context).showSnackBar(

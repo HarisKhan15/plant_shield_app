@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "54504889818",
+    "project_id": "plant-shield-4aa49",
+    "storage_bucket": "plant-shield-4aa49.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54504889818:android:ee534e8838addd618f34e3",
+        "android_client_info": {
+          "package_name": "com.example.plant_shield_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl2RHCcWeesaVkS6lzn9IIB9FwUgY8yTE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

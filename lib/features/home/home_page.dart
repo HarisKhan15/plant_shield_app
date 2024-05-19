@@ -130,7 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.of(context).pop(); // Close the dialog
               },
               style: TextButton.styleFrom(
-                primary: Constants.primaryColor,
+                foregroundColor: Constants.primaryColor,
               ),
               child: Text('OK'),
             ),
@@ -154,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.of(context).pop();
               },
               style: TextButton.styleFrom(
-                primary: Constants.primaryColor,
+                foregroundColor: Constants.primaryColor,
               ),
               child: Text('Cancel'),
             ),
@@ -164,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 _performLogout(context);
               },
               style: TextButton.styleFrom(
-                primary: Constants.primaryColor,
+                foregroundColor: Constants.primaryColor,
               ),
               child: Text('Logout'),
             ),
@@ -178,6 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Perform your logout logic here
     logindata?.setBool('login', true);
     logindata?.remove("userObj");
+    userService.logoutUser(username!);
     Navigator.of(context).pop();
     Navigator.pushReplacement(
       context,
@@ -271,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.of(context).pop();
                   },
                   style: TextButton.styleFrom(
-                    primary: Constants.primaryColor,
+                    foregroundColor: Constants.primaryColor,
                   ),
                   child: Text('OK'),
                 ),

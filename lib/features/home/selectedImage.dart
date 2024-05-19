@@ -158,11 +158,9 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
           ),
         );
 
-        Future.delayed(Duration(seconds: 2), () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-        });
-
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
       } else {
         Map<String, dynamic> errorJson = jsonDecode(response!.body);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -357,7 +355,36 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
           children: [
             TextButton(
               onPressed: () {
-                removeFromUserPlant();
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Remove Plant',
+                          style: TextStyle(color: Constants.primaryColor)),
+                      content: Text('Are you sure you want Remove your plant?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Constants.primaryColor,
+                          ),
+                          child: Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            removeFromUserPlant();
+                          },
+                          style: TextButton.styleFrom(
+                            foregroundColor: Constants.primaryColor,
+                          ),
+                          child: Text('Remove'),
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
               child: Text(
                 'Click Here',

@@ -2,8 +2,10 @@
 
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/src/response.dart';
+import 'package:plant_shield_app/api/firebase_api.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
 import 'package:plant_shield_app/features/otp/otp-page.dart';
@@ -39,13 +41,15 @@ class _SignupScreenState extends State<SignupScreen> {
 
   UserRegistration _constructRegistrationObject() {
     return UserRegistration(_emailController.text, _usernameController.text,
-        _passwordController.text);
+        _passwordController.text, '');
   }
 
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
       Response? response;
       UserRegistration userRegistration = _constructRegistrationObject();
+      String? deviceToken = await FirebaseMessaging.instance.getToken();
+      userRegistration.deviceToken = deviceToken ?? '';
       try {
         LoadingDialog.showLoadingDialog(context);
         bool isUserValidate = await _validateUser(userRegistration);
@@ -68,9 +72,10 @@ class _SignupScreenState extends State<SignupScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  OtpScreen(userRegistration: userRegistration,
-                  pageType: Constants.SIGN_UP,)),
+              builder: (context) => OtpScreen(
+                    userRegistration: userRegistration,
+                    pageType: Constants.SIGN_UP,
+                  )),
         );
       } else {
         Map<String, dynamic> errorJson = jsonDecode(response!.body);
@@ -174,15 +179,14 @@ class _SignupScreenState extends State<SignupScreen> {
                                     if (value.isNotEmpty) {
                                       return 'Enter a valid email';
                                     } else {
-                                      return null; 
+                                      return null;
                                     }
                                   }
                                   return null;
                                 },
                                 decoration: constantInputDecoration(
                                   hintText: 'Email',
-                                  suffixImagePath:
-                                      'assets/mail.png', 
+                                  suffixImagePath: 'assets/mail.png',
                                 ),
                               ),
                             ),
