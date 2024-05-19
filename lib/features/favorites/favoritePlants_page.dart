@@ -113,7 +113,7 @@ class _FavScreenState extends State<favScreen> {
                             0,
                           ),
                           width: size.width * 0.41,
-                          height: size.height * 0.28,
+                          height: size.height * 0.25,
                           child: FavPlantWidget(
                             index: startIndex + i,
                             plantList: widget.favoritedPlants,

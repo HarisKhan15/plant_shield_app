@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
 import 'package:plant_shield_app/features/home/plants_model.dart';
@@ -26,12 +28,15 @@ class _DetailPageState extends State<DetailPage> {
     Size size = MediaQuery.of(context).size;
     List<Plant> _plantList = Plant.plantList;
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned(
-            top: 50,
-            left: 20,
-            right: 20,
+        appBar: AppBar(
+          toolbarHeight: 3,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
+            child: Column(children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 20, left: 15, right: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -79,63 +84,53 @@ class _DetailPageState extends State<DetailPage> {
               ],
             ),
           ),
-          Positioned(
-            top: 100,
-            left: 20,
-            right: 20,
-            child: Container(
-              width: size.width * .8,
-              height: size.height * .8,
-              padding: const EdgeInsets.all(20),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 10,
-                    left: 0,
-                    child: SizedBox(
-                      height: 350,
-                      child: Image.asset(_plantList[widget.plantId].imageURL),
+          Container(
+            height: size.height * .42,
+            padding: const EdgeInsets.only(right: 15),
+            child: Stack(
+              children: [
+                Positioned(
+                  right: size.width * 0.3,
+                  child: SizedBox(
+                    height: 300,
+                    child: Image.asset(_plantList[widget.plantId].imageURL),
+                  ),
+                ),
+                Positioned(
+                  top: 40,
+                  right: 0,
+                  child: SizedBox(
+                    //  height: 200,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        PlantFeature(
+                          title: 'Sunlight',
+                          plantFeature:
+                              _plantList[widget.plantId].sunlightRequirement,
+                        ),
+                        PlantFeature(
+                          title: 'Watering Frequency',
+                          plantFeature:
+                              _plantList[widget.plantId].wateringFrequency,
+                        ),
+                        PlantFeature(
+                          title: 'Blooming Season',
+                          plantFeature:
+                              _plantList[widget.plantId].bloomingSeason,
+                        ),
+                      ],
                     ),
                   ),
-                  Positioned(
-                    top: 10,
-                    right: 0,
-                    child: SizedBox(
-                      height: 200,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          PlantFeature(
-                            title: 'Size',
-                            plantFeature: _plantList[widget.plantId].size,
-                          ),
-                          PlantFeature(
-                            title: 'Humidity',
-                            plantFeature:
-                                _plantList[widget.plantId].humidity.toString(),
-                          ),
-                          PlantFeature(
-                            title: 'Temperature',
-                            plantFeature:
-                                _plantList[widget.plantId].temperature,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
+          SingleChildScrollView(
             child: Container(
-              padding: const EdgeInsets.only(top: 80, left: 30, right: 30),
-              height: size.height * .5,
-              width: size.width,
+              padding: const EdgeInsets.only(
+                  top: 50, left: 20, right: 20, bottom: 50),
               decoration: BoxDecoration(
                 color: Constants.primaryColor.withOpacity(.4),
                 borderRadius: const BorderRadius.only(
@@ -146,138 +141,87 @@ class _DetailPageState extends State<DetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _plantList[widget.plantId].plantName,
-                            style: TextStyle(
-                              color: Constants.primaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 30.0,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          // Text(
-                          //   r'$' + _plantList[widget.plantId].price.toString(),
-                          //   style: TextStyle(
-                          //     color: Constants.blackColor,
-                          //     fontSize: 24.0,
-                          //     fontWeight: FontWeight.bold,
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          // Text(
-                          //   _plantList[widget.plantId].rating.toString(),
-                          //   style: TextStyle(
-                          //     fontSize: 30.0,
-                          //     color: Constants.primaryColor,
-                          //   ),
-                          // ),
-                          // Icon(
-                          //   Icons.star,
-                          //   size: 30.0,
-                          //   color: Constants.primaryColor,
-                          // ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 7.0,
-                  ),
-                  Expanded(
-                    child: Text(
-                      _plantList[widget.plantId].decription,
-                      textAlign: TextAlign.justify,
-                      style: TextStyle(
-                        height: 1.5,
-                        fontSize: 18,
-                        color: Constants.blackColor.withOpacity(.7),
-                      ),
+                  Text(
+                    _plantList[widget.plantId].plantName,
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w500,
+                      color: Constants.primaryColor.withOpacity(.9),
                     ),
+                  ),
+                  Text(
+                    _plantList[widget.plantId].species,
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      fontSize: 22,
+                      color: Constants.primaryColor.withOpacity(.8),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Text(
+                    _plantList[widget.plantId].description,
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                      height: 1.5,
+                      fontSize: 18,
+                      color: Constants.blackColor.withOpacity(.6),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                   _buildDetailRow(
+                    attribute: 'Temprature',
+                    value: _plantList[widget.plantId].temperature,
+                  ),
+                  SizedBox(height: 30), _buildDetailRow(
+                    attribute: 'Humidity',
+                    value: _plantList[widget.plantId].humidity,
+                  ),
+                  SizedBox(height: 30),
+                  _buildDetailRow(
+                    attribute: 'Soil Type',
+                    value: _plantList[widget.plantId].soilType,
+                  ),
+                  SizedBox(height: 30),
+                  _buildDetailRow(
+                    attribute: 'Growth Rate',
+                    value: _plantList[widget.plantId].growthRate,
+                  ),
+                  SizedBox(height: 30),
+                  _buildDetailRow(
+                    attribute: 'Height',
+                    value: _plantList[widget.plantId].height,
+                  ),
+                  SizedBox(height: 30),
+                  _buildDetailRow(
+                    attribute: 'Spread',
+                    value: _plantList[widget.plantId].spread,
+                  ),
+                  SizedBox(height: 30),
+                  _buildDetailRow(
+                    attribute: 'Diseases',
+                    value: _plantList[widget.plantId].diseases,
+                  ),
+                  SizedBox(height: 30),
+                  _buildDetailRow(
+                    attribute: 'Fertilizer Requirements',
+                    value: _plantList[widget.plantId].fertilizerRequirements,
+                  ),
+                  SizedBox(height: 30),
+                  _buildDetailRow(
+                    attribute: 'Common Problems',
+                    value: _plantList[widget.plantId].commonProblems,
+                  ),
+                  SizedBox(height: 30),
+                  _buildDetailRow(
+                    attribute: 'Uses',
+                    value: _plantList[widget.plantId].uses,
                   ),
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: SizedBox(
-        width: size.width * .9,
-        height: 50,
-        // child: Row(
-        //   children: [
-        //     Container(
-        //       height: 50,
-        //       width: 50,
-        //       child: IconButton(
-        //           onPressed: () {
-        //             setState(() {
-        //               bool isSelected = toggleIsSelected(
-        //                   _plantList[widget.plantId].isSelected);
-
-        //               _plantList[widget.plantId].isSelected = isSelected;
-        //             });
-        //           },
-        //           icon: Icon(
-        //             Icons.shopping_cart,
-        //             color: _plantList[widget.plantId].isSelected == true
-        //                 ? Colors.white
-        //                 : Constants.primaryColor,
-        //           )),
-        //       decoration: BoxDecoration(
-        //           color: _plantList[widget.plantId].isSelected == true
-        //               ? Constants.primaryColor.withOpacity(.5)
-        //               : Colors.white,
-        //           borderRadius: BorderRadius.circular(50),
-        //           boxShadow: [
-        //             BoxShadow(
-        //               offset: const Offset(0, 1),
-        //               blurRadius: 5,
-        //               color: Constants.primaryColor.withOpacity(.3),
-        //             ),
-        //           ]),
-        //     ),
-        //     const SizedBox(
-        //       width: 20,
-        //     ),
-        //     Expanded(
-        //       child: Container(
-        //         decoration: BoxDecoration(
-        //             color: Constants.primaryColor,
-        //             borderRadius: BorderRadius.circular(10),
-        //             boxShadow: [
-        //               BoxShadow(
-        //                 offset: const Offset(0, 1),
-        //                 blurRadius: 5,
-        //                 color: Constants.primaryColor.withOpacity(.3),
-        //               )
-        //             ]),
-        //         child: const Center(
-        //           child: Text(
-        //             'BUY NOW',
-        //             style: TextStyle(
-        //               color: Colors.white,
-        //               fontSize: 20.0,
-        //             ),
-        //           ),
-        //         ),
-        //       ),
-        //     ),
-        //   ],
-        // ),
-      ),
-    );
+          )
+        ])));
   }
 }
 
@@ -292,24 +236,58 @@ class PlantFeature extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            color: Constants.blackColor,
+    return Container(
+      width: 85,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: Constants.blackColor,
+              fontSize: 16.0,
+            ),
           ),
-        ),
-        Text(
-          plantFeature,
-          style: TextStyle(
-            color: Constants.primaryColor,
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
+          SizedBox(height: 5),
+          Text(
+            plantFeature,
+            style: TextStyle(
+              color: Constants.primaryColor,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        )
-      ],
+          SizedBox(height: 15),
+        ],
+      ),
     );
   }
+}
+
+// Helper function to build each detail row
+Widget _buildDetailRow({required String attribute, required String value}) {
+  return Row(
+    children: [
+      Expanded(
+        child: Text(
+          attribute,
+          textAlign: TextAlign.start,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 20.0,
+          ),
+        ),
+      ),
+      Expanded(
+        child: Text(
+          value,
+          textAlign: TextAlign.end,
+          style: TextStyle(
+            fontSize: 18,
+            color: Constants.blackColor.withOpacity(.6),
+          ),
+        ),
+      ),
+    ],
+  );
 }
