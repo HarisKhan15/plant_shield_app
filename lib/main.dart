@@ -16,7 +16,7 @@ Future<void> main() async {
   await Firebase.initializeApp();
   await FirebaseApi().initNotifications();
   runApp(MaterialApp(
-      title: "Plant Sheild",
+      title: "Plant Shield",
       debugShowCheckedModeBanner: false,
       initialRoute: '/splash',
       routes: {
@@ -32,8 +32,7 @@ Future<void> main() async {
 
 class UrlConfig {
   static const String baseUrl = "http://10.0.2.2:5000";
-  static const String baseUrlNgrok =
-      "http://192.168.0.104:5000";
+  static const String baseUrlNgrok = "http://192.168.0.104:5000";
 
   static Uri buildUri(String path) {
     return Uri.parse("$baseUrlNgrok/$path");
