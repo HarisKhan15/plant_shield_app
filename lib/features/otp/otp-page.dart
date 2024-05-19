@@ -277,7 +277,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         6,
                         (index) => Container(
                           margin: EdgeInsets.symmetric(horizontal: 3.0),
-                          width: 45,
+                          width: 42,
                           height: 50,
                           child: TextField(
                             controller: _otpControllers[index],

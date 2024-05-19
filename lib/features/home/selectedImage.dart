@@ -7,11 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:plant_shield_app/features/Components/loader.dart';
+import 'package:plant_shield_app/features/home/home_page.dart';
 import 'package:plant_shield_app/features/myPlants/feedback-form.dart';
 import 'package:plant_shield_app/models/create-user-plant.dart';
 import 'package:plant_shield_app/models/feedback-model.dart';
 import 'package:plant_shield_app/models/plant-detection.dart';
 import 'package:plant_shield_app/models/user-plant-detail.dart';
+import 'package:plant_shield_app/models/user-plants.dart';
 import 'package:plant_shield_app/services/user-plant-service.dart';
 import 'package:tuple/tuple.dart';
 import 'package:plant_shield_app/features/Components/constants.dart';
@@ -69,6 +71,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
   bool buttonClicked = false;
   Color buttonColor = Constants.primaryColor.withOpacity(0.7);
   DateTime lastWatered = DateTime.now();
+  List<UserPlant> userPlants = [];
 
   @override
   void initState() {
@@ -139,6 +142,50 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
     }
   }
 
+  void removeFromUserPlant() async {
+    Response? response;
+    try {
+      LoadingDialog.showLoadingDialog(context);
+      response = await _userPlantService.removePlantFromUserPlant(
+          username!, userPlantDetail!.userPlantId);
+
+      if (response != null && response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Plant removed successfully from my plants'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Future.delayed(Duration(seconds: 2), () {
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        });
+
+      } else {
+        Map<String, dynamic> errorJson = jsonDecode(response!.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorJson['error']),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Network error. Please try again.'),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      Navigator.of(context).pop();
+    }
+  }
+
   void updateWatering() async {
     Response? response;
     try {
@@ -180,124 +227,158 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
 
   Widget _waterUpdate(BuildContext context) {
     if (fromMyPlants!) {
-      return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(60),
-          color: Colors.grey[200],
-        ),
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Last water',
-                    style: TextStyle(
-                      fontFamily: 'Mulish-VariableFont_wght',
-                      fontWeight: FontWeight.w900,
-                      fontSize: 18,
-                      color: Colors.black,
-                    ),
+      return Column(children: [
+        Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(60),
+              color: Colors.grey[200],
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+            child: Column(
+              children: [
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Last water',
+                            style: TextStyle(
+                              fontFamily: 'Mulish-VariableFont_wght',
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            DateFormat('MMM dd, yyyy - h:mm a')
+                                .format(lastWatered),
+                            style: TextStyle(
+                              fontFamily: 'Lato-Bold',
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18,
+                              color: Constants.primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Next Watering',
+                            style: TextStyle(
+                              fontFamily: 'Mulish-VariableFont_wght',
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            messageForWatering,
+                            style: TextStyle(
+                              fontFamily: 'Lato-Bold',
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18,
+                              color: Constants.primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 30),
+                      Text(
+                        "Plant care tip",
+                        style: TextStyle(
+                          fontFamily: 'Lato-Bold',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 20,
+                          color: Constants.primaryColor.withOpacity(0.9),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Did your plant receive its recent watering?",
+                        style: TextStyle(
+                          fontFamily: 'Lato-Bold',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                          color: Constants.primaryColor.withOpacity(0.7),
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: buttonClicked
+                                ? null
+                                : () {
+                                    updateWatering();
+                                    DateTime currentTime = DateTime.now();
+                                    setState(() {
+                                      buttonClicked = true;
+                                      lastWatered = currentTime;
+                                      messageForWatering =
+                                          "${plantDetection!.wateringSchedule} hours left";
+                                      buttonColor = Colors.grey;
+                                    });
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: buttonColor,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 20),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                side: BorderSide(color: buttonColor),
+                              ),
+                            ),
+                            child: Text(
+                              'Watering Done',
+                              style: TextStyle(
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  Text(
-                    DateFormat('MMM dd, yyyy - h:mm a').format(lastWatered),
-                    style: TextStyle(
-                      fontFamily: 'Lato-Bold',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 18,
-                      color: Constants.primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Next Watering',
-                    style: TextStyle(
-                      fontFamily: 'Mulish-VariableFont_wght',
-                      fontWeight: FontWeight.w900,
-                      fontSize: 18,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    messageForWatering,
-                    style: TextStyle(
-                      fontFamily: 'Lato-Bold',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 18,
-                      color: Constants.primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 30),
-              Text(
-                "Plant care tip",
+                ),
+              ],
+            )),
+        SizedBox(height: 10),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton(
+              onPressed: () {
+                removeFromUserPlant();
+              },
+              child: Text(
+                'Click Here',
                 style: TextStyle(
-                  fontFamily: 'Lato-Bold',
-                  fontWeight: FontWeight.w500,
-                  fontSize: 20,
-                  color: Constants.primaryColor.withOpacity(0.9),
+                  decoration: TextDecoration.underline,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  color: Colors.red,
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
-                "Did your plant receive its recent watering?",
-                style: TextStyle(
-                  fontFamily: 'Lato-Bold',
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15,
-                  color: Constants.primaryColor.withOpacity(0.7),
-                ),
+            ),
+            Text(
+              'to remove this plant',
+              style: TextStyle(
+                fontSize: 12,
+                color: Color(0xfff4c505b),
               ),
-              SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: buttonClicked
-                        ? null
-                        : () {
-                            updateWatering();
-                            DateTime currentTime = DateTime.now();
-                            setState(() {
-                              buttonClicked = true;
-                              lastWatered = currentTime;
-                              messageForWatering =
-                                  "${plantDetection!.wateringSchedule} hours left";
-                              buttonColor = Colors.grey;
-                            });
-                          },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: buttonColor,
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: buttonColor),
-                      ),
-                    ),
-                    child: Text(
-                      'Watering Done',
-                      style: TextStyle(
-                        fontSize: 19,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
+      ]);
     } else {
       return SizedBox.shrink();
     }
@@ -448,7 +529,9 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                                     });
                                   },
                             style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.green, backgroundColor: Colors.white, shape: CircleBorder(),
+                              foregroundColor: Colors.green,
+                              backgroundColor: Colors.white,
+                              shape: CircleBorder(),
                               padding: EdgeInsets.all(8),
                               elevation: 7,
                               shadowColor: Colors.grey,

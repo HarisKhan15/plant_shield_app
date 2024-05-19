@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, unnecessary_brace_in_string_interps
+// ignore_for_file: file_names, unnecessary_brace_in_string_interps, avoid_print
 
 import 'dart:convert';
 import 'dart:io';
@@ -58,6 +58,18 @@ class UserPlantService extends ChangeNotifier {
       throw Exception('Failed to add user plant. Please try again later.');
     }
   }
+ 
+  Future<http.Response?> removePlantFromUserPlant(String username,int userPlantId) async {
+     try {
+    var request = http.Request('DELETE', UrlConfig.buildUri(('user-plants/${username}/${userPlantId}')));
+     var streamedResponse = await request.send();
+     return await http.Response.fromStream(streamedResponse);
+     }
+     catch (e) {
+    print('Remove plant error: $e');
+    throw Exception('Failed to remove user plant. Please try again later.');
+     }
+     }
 
   Future<http.Response?> fetchUserPlants(String username) async {
     try {
