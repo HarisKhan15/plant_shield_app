@@ -45,7 +45,7 @@ class _FavPlantWidgetState extends State<FavPlantWidget> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Constants.primaryColor.withOpacity(.1),
+          color: Constants.primaryColor.withOpacity(.2),
           borderRadius: BorderRadius.circular(10),
         ),
         height: size.height * 0.1,
@@ -61,30 +61,31 @@ class _FavPlantWidgetState extends State<FavPlantWidget> {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Container(
-                  width: 75.0,
-                  height: 75.0,
-                  decoration: BoxDecoration(
-                    color: Constants.primaryColor.withOpacity(.8),
-                    shape: BoxShape.circle,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 45),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 1.0,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: size.height * 0.058,
+                      backgroundColor: Colors.white.withOpacity(0.5),
+                      backgroundImage: AssetImage(
+                        widget.plantList[widget.index].imageURL,
+                      ),
+                    ),
                   ),
                 ),
                 Positioned(
-                  bottom: 18,
-                  left: 0,
-                  right: 0,
-                  child: SizedBox(
-                    height: 100.0,
-                    child: Image.asset(widget.plantList[widget.index].imageURL),
-                  ),
-                ),
-                Positioned(
-                  top: 83,
-                  left: 20,
+                  top: size.height * 0.13,
+                  // left: 20,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.plantList[widget.index].category),
                       Text(
                         widget.plantList[widget.index].plantName,
                         style: TextStyle(
@@ -95,6 +96,7 @@ class _FavPlantWidgetState extends State<FavPlantWidget> {
                           color: Constants.blackColor,
                         ),
                       ),
+                      Text(widget.plantList[widget.index].species),
                     ],
                   ),
                 ),
@@ -107,17 +109,14 @@ class _FavPlantWidgetState extends State<FavPlantWidget> {
                       !widget.plantList[widget.index].isFavorated;
                   widget.plantList[widget.index].isFavorated = isFavorited;
                 });
-                widget.onRemove(widget.index);
               },
               child: Container(
-                padding: const EdgeInsets.all(8.0),
-                margin: const EdgeInsets.only(right: 15, bottom: 120),
+                padding: const EdgeInsets.all(5.0),
+                margin: const EdgeInsets.only(right: 10, bottom: 115),
                 child: Icon(
                   widget.plantList[widget.index].isFavorated
                       ? Icons.favorite
                       : Icons.favorite_border,
-                  size:
-                      size.width < 600 ? 24.0 : 30.0, 
                   color: Constants.primaryColor,
                 ),
                 decoration: BoxDecoration(

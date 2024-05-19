@@ -49,12 +49,12 @@ class _HomePlantWidgetState extends State<HomePlantWidget> {
           borderRadius: BorderRadius.circular(10),
         ),
         height: 80.0,
-        padding: EdgeInsets.only(
-          left: size.width *0.03, 
-          top:size.height *0.02, 
-        ),
+        // padding: EdgeInsets.only(
+        //   left: size.width *0.0,
+        //   top:size.height *0.0,
+        // ),
         margin: EdgeInsets.only(
-          top: size.height * 0.02, 
+          top: size.height * 0.02,
         ),
         width: size.width,
         child: Row(
@@ -64,45 +64,44 @@ class _HomePlantWidgetState extends State<HomePlantWidget> {
             Stack(
               clipBehavior: Clip.none,
               children: [
-                Container(
-                  width: size.width * 0.15,
-                  height: size.width * 0.15,
-                  margin: EdgeInsets.only(
-                    top: size.height * 0.02, 
-                  ),
-                  decoration: BoxDecoration(
-                    color: Constants.primaryColor.withOpacity(.8),
-                    shape: BoxShape.circle,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 6, left: 4),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.grey, // Color of the border
+                        width: 1.0, // Width of the border
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: size.height * 0.04,
+                      backgroundColor: Colors.white.withOpacity(0.5),
+                      backgroundImage: AssetImage(
+                        widget.plantList[widget.index].imageURL,
+                      ),
+                    ),
                   ),
                 ),
                 Positioned(
-                  bottom: size.height * 0.01,
-                  left: 0,
-                  right: 0,
-                  child: SizedBox(
-                    height: size.height * 0.1,
-                    child: Image.asset(widget.plantList[widget.index].imageURL),
-                  ),
-                ),
-                Positioned(
-                  bottom: 27,
-                  left: 85,
+                  bottom: 20,
+                  left: 90,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.plantList[widget.index].category,
-                        style: TextStyle(
-                          fontSize: size.width < 600 ? 14.0 : 16.0,
-                          color: Constants.blackColor,
-                        ),
-                      ),
-                      SizedBox(height: 2),
                       Text(
                         widget.plantList[widget.index].plantName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: size.width < 600 ? 16.0 : 18.0,
+                          color: Constants.blackColor,
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        widget.plantList[widget.index].species,
+                        style: TextStyle(
+                          fontSize: size.width < 600 ? 14.0 : 16.0,
                           color: Constants.blackColor,
                         ),
                       ),

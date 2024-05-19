@@ -73,11 +73,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-      Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
       appBar: AppBar(
-          leading: GestureDetector(
+        leading: GestureDetector(
           onTap: () {
             Navigator.of(context).pop();
           },
@@ -87,7 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Icon(
               Icons.arrow_back_rounded,
               color: Colors.white,
-              size: size.width < 600 ? 24 : 30, 
+              size: size.width < 600 ? 24 : 30,
             ),
           ),
         ),
@@ -98,12 +98,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            
           ),
         ),
         centerTitle: true,
         elevation: 0,
-         automaticallyImplyLeading: false,
+        automaticallyImplyLeading: false,
       ),
       body: ListView(
         children: [
@@ -134,15 +133,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
           ),
-          Divider(),
-          _buildSettingsItem(
-            context,
-            'Change Email',
-            'assets/mail.png',
-            () {},
-          ),
-          Divider(),
-          _buildSettingsHeading('Notification'),
         ],
       ),
     );

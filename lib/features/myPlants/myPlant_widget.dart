@@ -73,13 +73,13 @@ class MyPlantWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        plantList[index].category,
-                        style: TextStyle(
-                          fontSize: size.width < 600 ? 16.0 : 18.0,
-                          color: Constants.blackColor,
-                        ),
-                      ),
+                      // Text(
+                      //   plantList[index].category,
+                      //   style: TextStyle(
+                      //     fontSize: size.width < 600 ? 16.0 : 18.0,
+                      //     color: Constants.blackColor,
+                      //   ),
+                      // ),
                       SizedBox(height: 2),
                       Text(
                         plantList[index].plantName,

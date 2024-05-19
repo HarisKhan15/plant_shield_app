@@ -282,15 +282,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    //Plants category
-    List<String> _plantTypes = [
-      'Recommended',
-      'Indoor',
-      'Outdoor',
-      'Garden',
-      'Supplement',
-    ];
-
     //Toggle Favorite button
     bool toggleIsFavorated(bool isFavorited) {
       return !isFavorited;
@@ -299,8 +290,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        toolbarHeight: size.width < 600 ? 56 : 65,
-        backgroundColor: Colors.white,
+        //toolbarHeight: size.width < 600 ? 56 : 65,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
@@ -317,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
           'Plant Shield',
           style: TextStyle(
             color: Color(0xFF236419),
-            fontSize: size.width < 600 ? 18 : 22,
+            fontSize: size.width < 600 ? 22 : 24,
             shadows: [
               Shadow(
                 color: Colors.black.withOpacity(0.2),
@@ -332,8 +323,8 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.only(right: 8.0),
             child: Image.asset(
               'assets/logo3.png',
-              width: size.width < 600 ? 40 : 50,
-              height: size.width < 600 ? 40 : 50,
+              width: size.width < 600 ? 55 : 60,
+              height: size.width < 600 ? 55 : 60,
               fit: BoxFit.contain,
             ),
           ),
@@ -357,22 +348,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SizedBox(height: 20),
-            ListTile(
-              leading: Icon(
-                Icons.group_outlined,
-                color: Constants.primaryColor,
-                size: size.width < 600 ? 24 : 30,
-              ),
-              title: Text(
-                'Community',
-                style: TextStyle(fontSize: size.width < 600 ? 16 : 18),
-              ),
-              onTap: () {},
-            ),
-            Divider(
-              color: Constants.primaryColor,
-              thickness: 0.6,
-            ),
             ListTile(
               leading: Image.asset(
                 'assets/plant.png',
@@ -499,46 +474,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
-            // Category bar
+
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              height: size.width < 550 ? 55.0 : 100.0,
-              width: size.width,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: _plantTypes.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(9.0),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedIndex = index;
-                        });
-                      },
-                      child: Text(
-                        _plantTypes[index],
-                        style: TextStyle(
-                          fontSize: size.width < 600 ? 16.0 : 16.0,
-                          fontWeight: selectedIndex == index
-                              ? FontWeight.bold
-                              : FontWeight.w300,
-                          color: selectedIndex == index
-                              ? Constants.primaryColor
-                              : Constants.blackColor,
-                        ),
-                      ),
-                    ),
-                  );
-                },
+              padding: const EdgeInsets.only(left: 16, bottom: 20, top: 20),
+              child: const Text(
+                'Recommanded Plants',
+                style: TextStyle(
+                    color: Color(0xFF236419),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500),
               ),
             ),
-            // Right scroll plant view according to category
+
             SizedBox(
-              height: size.height * .3,
+              height: size.height * .25,
               child: ListView.builder(
                 itemCount: _plantList.length,
                 scrollDirection: Axis.horizontal,
@@ -553,75 +502,81 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               type: PageTransitionType.bottomToTop));
                     },
-                    child: Container(
-                      width: size.width * 0.5,
-                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            top: 10,
-                            right: 20,
-                            child: Container(
-                              height: 50,
-                              width: 50,
-                              child: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    bool isFavorited = toggleIsFavorated(
-                                        _plantList[index].isFavorated);
-                                    _plantList[index].isFavorated = isFavorited;
-                                  });
-                                },
-                                icon: Icon(
-                                  _plantList[index].isFavorated == true
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  color: Constants.primaryColor,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 4), //box
+                      child: Container(
+                        width: size.width * 0.43,
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              top: 17,
+                              right: 20,
+                              child: Container(
+                                height: 40,
+                                width: 40,
+                                child: IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      bool isFavorited = toggleIsFavorated(
+                                          _plantList[index].isFavorated);
+                                      _plantList[index].isFavorated =
+                                          isFavorited;
+                                    });
+                                  },
+                                  icon: Icon(
+                                    _plantList[index].isFavorated == true
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: Constants.primaryColor,
+                                  ),
+                                  iconSize: 25,
                                 ),
-                                iconSize: 30,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(50),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
                               ),
                             ),
-                          ),
-                          Positioned(
-                            left: 50,
-                            right: 50,
-                            top: 50,
-                            bottom: 50,
-                            child: Image.asset(_plantList[index].imageURL),
-                          ),
-                          Positioned(
-                            bottom: 15,
-                            left: 20,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _plantList[index].category,
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  _plantList[index].plantName,
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
+                            Positioned(
+                              // left: 20,
+                              bottom: 0,
+                              child: Image.asset(
+                                _plantList[index].imageURL,
+                                width: size.width * 0.3,
+                                height: size.height * 0.3,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      decoration: BoxDecoration(
-                        color: Constants.primaryColor.withOpacity(.8),
-                        borderRadius: BorderRadius.circular(20),
+                            Positioned(
+                              bottom: 15,
+                              left: 20,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _plantList[index].plantName,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    _plantList[index].species,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        decoration: BoxDecoration(
+                          color: Constants.primaryColor.withOpacity(.7),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
                     ),
                   );
@@ -630,19 +585,19 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             // New Plant Text
             Container(
-              padding: const EdgeInsets.only(left: 16, bottom: 20, top: 20),
+              padding: const EdgeInsets.only(left: 16, top: 18),
               child: const Text(
-                'New Plants',
+                'More Plants',
                 style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18.0,
-                ),
+                    color: Color(0xFF236419),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500),
               ),
             ),
             // All Plants
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              height: size.height * .41,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              height: size.height * 0.5,
               child: Stack(
                 children: [
                   ListView.builder(
@@ -691,6 +646,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             backgroundColor: Constants.primaryColor,
                             tooltip: 'Button 1',
                             heroTag: null,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  30.0), // Adjust the radius as needed
+                            ),
                             child: Icon(
                               Icons.camera_alt,
                               color: Color.fromARGB(255, 209, 230, 195),
@@ -708,6 +667,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             backgroundColor: Constants.primaryColor,
                             tooltip: 'Button 2',
                             heroTag: null,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  30.0), // Adjust the radius as needed
+                            ),
                             child: Icon(
                               Icons.photo_library,
                               color: Color.fromARGB(255, 209, 230, 195),
