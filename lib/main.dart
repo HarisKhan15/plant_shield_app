@@ -33,8 +33,9 @@ Future<void> main() async {
 class UrlConfig {
   static const String baseUrl = "http://10.0.2.2:5000";
   static const String baseUrlNgrok = "http://192.168.0.104:5000";
+  static const String prodUrl = "http://4.240.96.138:8080";
 
   static Uri buildUri(String path) {
-    return Uri.parse("$baseUrlNgrok/$path");
+    return Uri.parse("$prodUrl/$path");
   }
 }
