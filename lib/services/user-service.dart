@@ -29,11 +29,12 @@ class UserService extends ChangeNotifier {
     return null;
   }
 
-  Future<http.Response?> loginUser(String username, String password) async {
+  Future<http.Response?> loginUser(String username, String password,String deviceToken) async {
     try {
       var requestBody = {
         "username": username,
         "password": password,
+        'device_token': deviceToken
       };
       final response =
           await http.post(UrlConfig.buildUri("login"), body: requestBody);
@@ -42,6 +43,18 @@ class UserService extends ChangeNotifier {
     } catch (e) {
       print('Login error: $e');
       throw Exception('Failed to log in. Please try again later.');
+    }
+  }
+
+  Future<http.Response?> logoutUser(String username) async {
+    try {
+      final response =
+          await http.put(UrlConfig.buildUri("logout/$username"));
+
+      return response;
+    } catch (e) {
+      print('Login error: $e');
+      throw Exception('Failed to logout. Please try again later.');
     }
   }
 

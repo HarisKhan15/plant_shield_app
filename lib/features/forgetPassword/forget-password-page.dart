@@ -50,7 +50,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         Navigator.of(context).pop();
       }
       if (response != null && response.statusCode == 200) {
-        UserRegistration userRegistration = UserRegistration(userEmail!, username, '');
+        UserRegistration userRegistration = UserRegistration(userEmail!, username, '','');
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
