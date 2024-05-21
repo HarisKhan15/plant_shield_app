@@ -18,10 +18,12 @@ class UserPlantDetail {
       userPlantImage: json['user_plant_image'] ?? '',
       lastWatered: json['last_watered'] != null
           ? DateTime.parse(
-              HttpDate.parse(json['last_watered']).toIso8601String())
+                  HttpDate.parse(json['last_watered']).toIso8601String())
+              .add(const Duration(hours: 5))
           : null,
       dateAdded: json['date_added'] != null
           ? DateTime.parse(HttpDate.parse(json['date_added']).toIso8601String())
+              .add(const Duration(hours: 5))
           : null,
     );
   }

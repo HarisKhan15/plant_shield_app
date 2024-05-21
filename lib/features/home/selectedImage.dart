@@ -72,6 +72,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
   Color buttonColor = Constants.primaryColor.withOpacity(0.7);
   DateTime lastWatered = DateTime.now();
   List<UserPlant> userPlants = [];
+  String? wateringScheduleMessage;
 
   @override
   void initState() {
@@ -83,6 +84,16 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
       fromMyPlants = widget.fromMyPlants;
       userPlantDetail = widget.userPlantDetail;
       isFeedBackRequired = widget.isFeedBackRequired;
+      double wateringSchedule = double.parse(plantDetection!.wateringSchedule);
+      Duration wateringInterval;
+      if (wateringSchedule < 1) {
+        wateringInterval = Duration(minutes: (wateringSchedule * 60).round());
+      } else {
+        wateringInterval = Duration(hours: wateringSchedule.round());
+      }
+      wateringScheduleMessage = wateringSchedule >= 1
+          ? "${wateringInterval.inHours} hours left"
+          : "${wateringInterval.inMinutes} minutes left";
       if (fromMyPlants!) {
         lastWatered = userPlantDetail!.lastWatered!;
       }
@@ -320,7 +331,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                                       buttonClicked = true;
                                       lastWatered = currentTime;
                                       messageForWatering =
-                                          "${plantDetection!.wateringSchedule} hours left";
+                                          wateringScheduleMessage!;
                                       buttonColor = Colors.grey;
                                     });
                                   },
@@ -416,14 +427,32 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
     Size size = MediaQuery.of(context).size;
     Widget waterUpdate = SizedBox.shrink();
     if (selectedButton == 'Watering') {
-      DateTime currentTime = DateTime.now();
-      DateTime nextWateringTime = userPlantDetail!.lastWatered!
-          .add(Duration(hours: int.parse(plantDetection!.wateringSchedule)));
+      DateTime currentTime =
+          DateTime.now().toUtc().add(const Duration(hours: 5));
+
+      double wateringSchedule = double.parse(plantDetection!.wateringSchedule);
+
+      DateTime nextWateringTime;
+      if (wateringSchedule < 1) {
+        nextWateringTime = userPlantDetail!.lastWatered!.add(Duration(
+            minutes:
+                Duration(minutes: (wateringSchedule * 60).round()).inMinutes));
+      } else {
+        nextWateringTime = userPlantDetail!.lastWatered!.add(
+            Duration(hours: Duration(hours: wateringSchedule.round()).inHours));
+      }
 
       if (currentTime.isBefore(nextWateringTime)) {
         Duration timeLeft = nextWateringTime.difference(currentTime);
         int hoursLeft = timeLeft.inHours;
-        messageForWatering = "$hoursLeft hours left";
+        int minutesLeft = timeLeft.inMinutes % 60;
+
+        if (wateringSchedule >= 1) {
+          messageForWatering = "$hoursLeft hours left";
+        } else {
+          messageForWatering = "$minutesLeft minutes left";
+        }
+
         buttonClicked = true;
         buttonColor = Colors.grey;
       }
@@ -683,7 +712,7 @@ class _SelectedImageScreenState extends State<SelectedImageScreen> {
                           header: 'Watering Schedule',
                           tupleContent: [
                             Tuple2('Frequency',
-                                '${plantDetection!.wateringSchedule} hours'),
+                                wateringScheduleMessage!.split(' left')[0]),
                           ],
                           simpleContent: [
                             plantDetection!.wateringScheduleDetail

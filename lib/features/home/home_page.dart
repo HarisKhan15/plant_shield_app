@@ -504,7 +504,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               type: PageTransitionType.bottomToTop));
                     },
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 4), //box
+                      padding: const EdgeInsets.only(left: 8), //box
                       child: Container(
                         width: size.width * 0.43,
                         margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -557,7 +557,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Text(
                                     _plantList[index].plantName,
                                     style: const TextStyle(
-                                      color: Colors.white70,
+                                      color: Colors.white,
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),

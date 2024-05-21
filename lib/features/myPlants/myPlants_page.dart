@@ -100,8 +100,13 @@ class _MyPlantsScreenState extends State<MyPlantsScreen> {
     DateTime currentTime = DateTime.now();
     for (var plant in userPlants) {
       DateTime lastWatered = plant.lastWatered;
-      Duration wateringInterval =
-          Duration(hours: int.parse(plant.wateringSchedule));
+      double wateringSchedule = double.parse(plant.wateringSchedule);
+      Duration wateringInterval;
+      if (wateringSchedule < 1) {
+        wateringInterval = Duration(minutes: (wateringSchedule * 60).round());
+      } else {
+        wateringInterval = Duration(hours: wateringSchedule.round());
+      }
       DateTime nextWateringTime = lastWatered.add(wateringInterval);
 
       if (currentTime.isBefore(nextWateringTime)) {

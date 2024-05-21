@@ -80,7 +80,7 @@ class Plant {
       wateringFrequency: 'Weekly',
       description:
           'Lavender is a fragrant herb known for its beautiful purple flowers and calming aroma. It is often used in aromatherapy, perfumes, and skincare products. Lavender plants thrive in sunny locations with well-drained soil.',
-      isFavorated: true,
+      isFavorated: false,
       isSelected: false,
       soilType: 'Sandy, Well-drained',
       growthRate: 'Medium',
@@ -149,7 +149,7 @@ class Plant {
       wateringFrequency: 'Bi-weekly',
       description:
           'Aloe Vera is a succulent plant known for its medicinal properties. Its gel-like substance is commonly used to treat burns, wounds, and skin irritations. Aloe Vera plants are easy to care for and can thrive indoors or outdoors.',
-      isFavorated: true,
+      isFavorated: false,
       isSelected: false,
       soilType: 'Sandy, Well-drained',
       growthRate: 'Slow',
@@ -218,7 +218,7 @@ class Plant {
       wateringFrequency: 'Weekly',
       description:
           'Monstera is a popular tropical plant known for its distinctive split leaves. It thrives in warm and humid climates, making it an ideal indoor plant in many regions. With proper care, Monstera can grow vigorously and add a touch of tropical elegance to any space.',
-      isFavorated: true,
+      isFavorated: false,
       isSelected: false,
       soilType: 'Well-drained, Peaty',
       growthRate: 'Medium to Fast',
@@ -264,7 +264,7 @@ class Plant {
       wateringFrequency: 'Weekly',
       description:
           'Neem is a versatile tree known for its medicinal properties. It is commonly used in Ayurvedic medicine and is prized for its antibacterial, antifungal, and insecticidal properties.',
-      isFavorated: true,
+      isFavorated: false,
       isSelected: false,
       soilType: 'Well-drained',
       growthRate: 'Medium',
